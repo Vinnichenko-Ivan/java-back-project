@@ -2,10 +2,9 @@ package com.hits.first.profile.model;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.UniqueConstraint;
+import javax.annotation.processing.Generated;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.UUID;
 
@@ -17,6 +16,7 @@ public class Profile {
     private UUID id;
 
     @Column(unique=true)
+    @NotNull
     private String login;
 
     private String name;
@@ -30,5 +30,11 @@ public class Profile {
     private Date registerDate;
 
     private String password;
+
+    @PrePersist
+    public void generate()
+    {
+        this.id = java.util.UUID.randomUUID();
+    }
 
 }

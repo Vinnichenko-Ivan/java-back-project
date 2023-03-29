@@ -1,12 +1,14 @@
 package com.hits.first.profile.controller;
 
 import com.hits.first.exception.NotImplementedException;
+import com.hits.first.profile.dto.CredentialsDto;
+import com.hits.first.profile.dto.ProfileDto;
+import com.hits.first.profile.dto.ProfileEditDto;
 import com.hits.first.profile.dto.ProfileRegisterDto;
+import com.hits.first.profile.service.ProfileService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Api
 @RestController
@@ -14,10 +16,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ProfileController {
 
-    @PostMapping("/register")
+    private final ProfileService profileService;
+
+    @PostMapping("/sign-up")
     public void register(ProfileRegisterDto profileRegisterDto)
     {
-        throw new NotImplementedException();
+        profileService.register(profileRegisterDto);
     }
 
+    @GetMapping("/user")
+    public ProfileDto getUser(CredentialsDto credentialsDto)
+    {
+        return profileService.getUser(credentialsDto);
+    }
+
+    @PutMapping("/user")
+    public void putUser(ProfileEditDto profileEditDto)
+    {
+        profileService.putUser(profileEditDto);
+    }
 }

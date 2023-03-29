@@ -1,18 +1,20 @@
 package com.hits.first.profile.dto;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
 import java.util.Date;
+import java.util.UUID;
 
 @Data
-public class ProfileEditDto {
-    @NotEmpty(message = "login.empty")
+public class ProfileDto {
+    private UUID id;
     private String login;
     private String name;
     private String surname;
     private String patronymic;
     private Date birthDay;
-    @NotEmpty(message = "password.empty")
+    private Date registerDate;
     private String password;
 }

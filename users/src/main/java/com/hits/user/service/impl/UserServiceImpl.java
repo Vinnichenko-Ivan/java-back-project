@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     @Override
     public void register(UserRegisterDto userRegisterDto) {
-        if(userRepository.existsByLogin(userRegisterDto.getLogin())) {
+        if(userRepository.existsByLogin(userRegisterDto.getLogin()) || userRepository.existsByPhone(userRegisterDto.getPhone())) {
             throw new UserAlreadyExistException();
         }
         else {
@@ -51,6 +51,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void putUser(UserEditDto userEditDto) {
         if(userRepository.existsByLogin(userEditDto.getLogin())) {
+            if(userRepository.existsByLogin(userEditDto.getLogin()) || userRepository.existsByPhone(userEditDto.getPhone())) {
+                throw new UserAlreadyExistException();
+            }
             User user = userRepository.getByLogin(userEditDto.getLogin());
             if(user.getPassword().equals(userEditDto.getPassword()))
             {

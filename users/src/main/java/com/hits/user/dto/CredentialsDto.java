@@ -7,9 +7,7 @@ import lombok.Data;
 
 @Data
 public class CredentialsDto {
-    @NotEmpty(message = "login.empty")
     private String login;
 
-    @NotEmpty(message = "password.empty")
     private String password;
 }

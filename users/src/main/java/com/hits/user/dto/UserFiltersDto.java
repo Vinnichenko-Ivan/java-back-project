@@ -6,13 +6,18 @@ import java.util.Date;
 import java.util.UUID;
 
 @Data
-public class UserDto {
-    private UUID id;
+public class UserFiltersDto {
     private String login;
+
+    private String email;
+
     private String name;
     private String surname;
     private String patronymic;
-    private Date birthDay;
-    private Date registerDate;
-    private String password;
+
+    private String phone;
+
+    private String city;
+
+    private UUID avatarId;
 }

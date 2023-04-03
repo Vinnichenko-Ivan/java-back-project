@@ -17,7 +17,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>user</module>
+        <module>users</module>
     </modules>
 
     <properties>

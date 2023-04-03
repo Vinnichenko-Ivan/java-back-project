@@ -4,15 +4,25 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Data
-public class UserRegisterDto {
-    @NotEmpty(message = "login.empty")
+public class UserEditDto {
     private String login;
+
+    private String email;
+
+    private String password;
+
     private String name;
     private String surname;
     private String patronymic;
-    private Date birthDay;
-    @NotEmpty(message = "password.empty")
-    private String password;
+
+    private Date birthDate;
+
+    private String phone;
+
+    private String city;
+
+    private UUID avatarId;
 }

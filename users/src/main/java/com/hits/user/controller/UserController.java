@@ -5,36 +5,45 @@ import com.hits.user.exception.NotImplementedException;
 import com.hits.user.service.UserService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
+import static com.hits.user.config.RegexConfig.LOGIN;
 
 @Api
 @RestController
-@RequestMapping("/user")
+@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@Validated
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping("/sign-up")
-    public UserDto register(@RequestBody UserRegisterDto userRegisterDto)
+    public UserDto register(@Valid @RequestBody UserRegisterDto userRegisterDto)
     {
         throw new NotImplementedException();
     }
 
-    @PostMapping("/sign-in")
-    public UserDto singIn(@RequestBody CredentialsDto credentialsDto)
+    @PostMapping(value = "/sign-in", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public UserDto singIn(@Valid @RequestBody CredentialsDto credentialsDto)
     {
         throw new NotImplementedException();
     }
 
     @GetMapping("/users")
-    public UsersDto getUsers(@RequestBody UsersQueryDto usersQueryDto)
+    public UsersDto getUsers(@Valid @RequestBody UsersQueryDto usersQueryDto)
     {
         throw new NotImplementedException();
     }
 
-    @GetMapping("/user")
-    public UserDto getUser(String login)
+    @PostMapping("/user")
+    public UserDto getUser(@Valid @NotNull @Pattern(regexp = LOGIN) String login)
     {
         throw new NotImplementedException();
     }
@@ -46,7 +55,7 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public UserDto putMe(@RequestBody UserEditDto userEditDto)
+    public UserDto putMe(@Valid @RequestBody UserEditDto userEditDto)
     {
         throw new NotImplementedException();
     }

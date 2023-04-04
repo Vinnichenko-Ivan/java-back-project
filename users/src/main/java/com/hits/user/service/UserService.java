@@ -7,7 +7,7 @@ import com.hits.user.dto.UserRegisterDto;
 
 public interface UserService {
 
-    void register(UserRegisterDto userRegisterDto);
+    UserDto register(UserRegisterDto userRegisterDto);
 
     UserDto getUser(CredentialsDto credentialsDto);
 

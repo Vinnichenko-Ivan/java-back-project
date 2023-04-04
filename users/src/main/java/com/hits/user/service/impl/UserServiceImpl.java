@@ -20,13 +20,17 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     @Override
-    public void register(UserRegisterDto userRegisterDto) {
-        if(userRepository.existsByLogin(userRegisterDto.getLogin()) || userRepository.existsByPhone(userRegisterDto.getPhone())) {
-            throw new UserAlreadyExistException();
+    public UserDto register(UserRegisterDto userRegisterDto) {
+        if(userRepository.existsByLogin(userRegisterDto.getLogin())) {
+            throw new UserAlreadyExistException("login is used");
+        }
+        else if(userRepository.existsByEmail(userRegisterDto.getEmail())) {
+            throw new UserAlreadyExistException("email is used");
         }
         else {
             User user = userMapper.map(userRegisterDto);
-            userRepository.save(user);
+            user = userRepository.save(user);
+            return userMapper.map(user);
         }
     }
 
@@ -51,8 +55,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void putUser(UserEditDto userEditDto) {
         if(userRepository.existsByLogin(userEditDto.getLogin())) {
-            if(userRepository.existsByLogin(userEditDto.getLogin()) || userRepository.existsByPhone(userEditDto.getPhone())) {
-                throw new UserAlreadyExistException();
+            if(userRepository.existsByLogin(userEditDto.getLogin())) {
+                throw new UserAlreadyExistException("login is used");
+            }
+            else if(userRepository.existsByEmail(userEditDto.getEmail())) {
+                throw new UserAlreadyExistException("email is used");
             }
             User user = userRepository.getByLogin(userEditDto.getLogin());
             if(user.getPassword().equals(userEditDto.getPassword()))

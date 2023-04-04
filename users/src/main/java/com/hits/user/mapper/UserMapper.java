@@ -11,8 +11,6 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     User map(UserRegisterDto userRegisterDto);
-
-
     void map(@MappingTarget User user, UserEditDto userEditDto);
 
     UserDto map(User user);

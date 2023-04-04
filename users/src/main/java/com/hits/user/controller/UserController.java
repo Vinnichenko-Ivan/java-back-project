@@ -27,7 +27,7 @@ public class UserController {
     @PostMapping("/sign-up")
     public UserDto register(@Valid @RequestBody UserRegisterDto userRegisterDto)
     {
-        throw new NotImplementedException();
+        return userService.register(userRegisterDto);
     }
 
     @PostMapping(value = "/sign-in", consumes = MediaType.APPLICATION_JSON_VALUE)

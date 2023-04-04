@@ -1,6 +1,7 @@
 package com.hits.user.model;
 
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -40,8 +41,8 @@ public class User {
     @PrePersist
     public void generate()
     {
-        this.id = java.util.UUID.randomUUID();
         this.registrationDate = new Date(System.currentTimeMillis());
+        this.id = java.util.UUID.randomUUID();
     }
 
 }

@@ -6,6 +6,7 @@ import com.hits.user.service.UserService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,9 +32,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/sign-in", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto singIn(@Valid @RequestBody CredentialsDto credentialsDto)
+    public ResponseEntity<UserDto> singIn(@Valid @RequestBody CredentialsDto credentialsDto)
     {
-        throw new NotImplementedException();
+        return userService.authorize(credentialsDto);
     }
 
     @GetMapping("/users")

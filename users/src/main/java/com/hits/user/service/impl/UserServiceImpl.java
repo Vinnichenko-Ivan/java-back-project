@@ -9,8 +9,13 @@ import com.hits.user.dto.UserEditDto;
 import com.hits.user.mapper.UserMapper;
 import com.hits.user.model.User;
 import com.hits.user.repository.UserRepository;
+import com.hits.user.service.JwtService;
+import com.hits.user.service.PasswordService;
 import com.hits.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +24,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+
+    private final PasswordService passwordService;
+
+    private final JwtService jwtService;
+
     @Override
     public UserDto register(UserRegisterDto userRegisterDto) {
         if(userRepository.existsByLogin(userRegisterDto.getLogin())) {
@@ -29,18 +39,23 @@ public class UserServiceImpl implements UserService {
         }
         else {
             User user = userMapper.map(userRegisterDto);
+            user.setPassword(passwordService.toHash(user.getPassword()));
             user = userRepository.save(user);
             return userMapper.map(user);
         }
     }
 
     @Override
-    public UserDto getUser(CredentialsDto credentialsDto) {
+    public ResponseEntity<UserDto> authorize(CredentialsDto credentialsDto) {
         if(userRepository.existsByLogin(credentialsDto.getLogin())) {
             User user = userRepository.getByLogin(credentialsDto.getLogin());
-            if(user.getPassword().equals(credentialsDto.getPassword()))
+            if(passwordService.comparison(credentialsDto.getPassword(), user.getPassword()))
             {
-                return userMapper.map(user);
+                UserDto userDto = userMapper.map(user);
+                String token = jwtService.generateAccessToken(user);
+                HttpHeaders responseHeaders = new HttpHeaders();
+                responseHeaders.set("Authorization", "Bearer " + token);
+                return new ResponseEntity(userDto, responseHeaders, HttpStatus.OK);
             }
             else
             {

@@ -12,4 +12,8 @@ public interface JwtService {
     boolean validateAccessToken(@NonNull String accessToken);
 
     Claims getAccessClaims(@NonNull String token);
+
+    User getUser();
+
+    String getLogin();
 }

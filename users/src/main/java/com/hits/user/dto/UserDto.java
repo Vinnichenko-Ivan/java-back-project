@@ -18,6 +18,6 @@ public class UserDto {
     private String surname;
     private String patronymic;
     private Date birthDate;
-    private Date registerDate;
+    private Date registrationDate;
     private String password;
 }

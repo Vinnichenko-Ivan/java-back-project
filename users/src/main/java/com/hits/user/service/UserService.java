@@ -11,5 +11,6 @@ public interface UserService {
     ResponseEntity<UserDto> authorize(CredentialsDto credentialsDto);
     void putUser(UserEditDto userEditDto);
 
+    UserDto getMe();
 }
 

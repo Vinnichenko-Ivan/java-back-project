@@ -22,12 +22,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private final JwtService jwtService;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     private final PasswordService passwordService;
 
-    private final JwtService jwtService;
 
     @Override
     public UserDto register(UserRegisterDto userRegisterDto) {
@@ -90,5 +90,10 @@ public class UserServiceImpl implements UserService {
         else {
             throw new BadCredentialsException();
         }
+    }
+
+    @Override
+    public UserDto getMe() {
+        return userMapper.map(jwtService.getUser());
     }
 }

@@ -1,6 +1,8 @@
 package com.hits.user.service.impl;
 
+import com.hits.user.filter.JwtAuthentication;
 import com.hits.user.model.User;
+import com.hits.user.repository.UserRepository;
 import com.hits.user.service.JwtService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -8,6 +10,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -22,8 +25,10 @@ import java.util.Date;
 public class JwtServiceImpl implements JwtService {
     private final SecretKey jwtAccessSecret;
 
-    public JwtServiceImpl(@Value("${jwt.secret.access}") String secret) {
+    private final UserRepository userRepository;
+    public JwtServiceImpl(@Value("${jwt.secret.access}") String secret, UserRepository userRepository) {
         this.jwtAccessSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -77,5 +82,18 @@ public class JwtServiceImpl implements JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    @Override
+    public User getUser() {
+        JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        String login = authentication.getUsername();
+        return userRepository.getByLogin(login);
+    }
+
+    @Override
+    public String getLogin() {
+        JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getUsername();
     }
 }

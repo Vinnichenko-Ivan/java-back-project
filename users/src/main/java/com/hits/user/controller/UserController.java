@@ -52,7 +52,7 @@ public class UserController {
     @GetMapping("/me")
     public UserDto getMe()
     {
-        throw new NotImplementedException();
+        return userService.getMe();
     }
 
     @PutMapping("/me")

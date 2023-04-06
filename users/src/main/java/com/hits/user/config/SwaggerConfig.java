@@ -1,6 +1,8 @@
 package com.hits.user.config;
 
 import io.swagger.annotations.Api;
+//import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+//import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -15,6 +17,12 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 @EnableWebMvc
+//@SecurityScheme(
+//        name = "bearerAuth",
+//        type = SecuritySchemeType.HTTP,
+//        bearerFormat = "JWT",
+//        scheme = "bearer"
+//)
 public class SwaggerConfig implements WebMvcConfigurer{
 
     @Bean

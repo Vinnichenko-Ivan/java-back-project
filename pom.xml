@@ -18,6 +18,7 @@
 
     <modules>
         <module>users</module>
+        <module>friends</module>
     </modules>
 
     <properties>

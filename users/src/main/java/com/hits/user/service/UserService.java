@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 public interface UserService {
     UserDto register(UserRegisterDto userRegisterDto);
     ResponseEntity<UserDto> authorize(CredentialsDto credentialsDto);
-    void putUser(UserEditDto userEditDto);
+    UserDto putUser(UserEditDto userEditDto);
 
     UserDto getMe();
 }

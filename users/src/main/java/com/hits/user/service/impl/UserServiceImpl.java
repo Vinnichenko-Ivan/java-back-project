@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void putUser(UserEditDto userEditDto) {
+    public UserDto putUser(UserEditDto userEditDto) {
         if(userRepository.existsByLogin(userEditDto.getLogin())) {
             if(userRepository.existsByLogin(userEditDto.getLogin())) {
                 throw new UserAlreadyExistException("login is used");
@@ -80,7 +80,8 @@ public class UserServiceImpl implements UserService {
             if(user.getPassword().equals(userEditDto.getPassword()))
             {
                 userMapper.map(user, userEditDto);
-                userRepository.save(user);
+                user = userRepository.save(user);
+                return userMapper.map(user);
             }
             else
             {

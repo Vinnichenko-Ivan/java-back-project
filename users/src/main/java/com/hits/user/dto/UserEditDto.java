@@ -24,9 +24,7 @@ public class UserEditDto {
     @Pattern(regexp = PASSWORD)
     private String password;
 
-    private String name;
-    private String surname;
-    private String patronymic;
+    private FullNameDto fullName;
 
     private Date birthDate;
 

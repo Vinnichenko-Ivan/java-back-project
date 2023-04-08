@@ -35,10 +35,6 @@ public class FriendsController {
         throw new NotImplementedException();
     }
 
-    @PatchMapping(value = "/friends")
-    List<FriendDto> synchronise() {
-        throw new NotImplementedException();
-    }
 
     @DeleteMapping(value = "/friend")
     FullFriendDto deleteFriend(@PathParam("id")UUID uuid) {

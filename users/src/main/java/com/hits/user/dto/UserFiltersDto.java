@@ -21,10 +21,8 @@ public class UserFiltersDto {
     @Pattern(regexp = EMAIL)
     private String email;
 
-    private String name;
-    private String surname;
-    private String patronymic;
-
+    private FullNameDto fullName;
+    
     @NotNull
     @Pattern(regexp = PHONE)
     private String phone;

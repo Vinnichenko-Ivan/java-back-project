@@ -35,10 +35,7 @@ public class BlockingController {
         throw new NotImplementedException();
     }
 
-    @PatchMapping(value = "/blocking")
-    List<FriendDto> synchronise() {
-        throw new NotImplementedException();
-    }
+
 
     @DeleteMapping(value = "/blocking")
     FullFriendDto deleteBlocking(@PathParam("id")UUID uuid) {

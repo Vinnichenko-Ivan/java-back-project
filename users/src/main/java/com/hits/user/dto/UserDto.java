@@ -14,10 +14,7 @@ public class UserDto {
     @NotNull
     @Pattern(regexp = LOGIN)
     private String login;
-    private String name;
-    private String surname;
-    private String patronymic;
+    private FullNameDto fullName;
     private Date birthDate;
     private Date registrationDate;
-    private String password;
 }

@@ -25,6 +25,7 @@ import java.util.Date;
 public class JwtServiceImpl implements JwtService {
     private final SecretKey jwtAccessSecret;
 
+
     private final UserRepository userRepository;
     public JwtServiceImpl(@Value("${jwt.secret.access}") String secret, UserRepository userRepository) {
         this.jwtAccessSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));

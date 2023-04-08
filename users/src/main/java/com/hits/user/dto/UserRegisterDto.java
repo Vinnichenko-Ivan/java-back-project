@@ -30,17 +30,8 @@ public class UserRegisterDto {
     @ApiModelProperty(notes = "password", example = "Strong@12", required = true)
     private String password;
 
-    @NotBlank
-    @ApiModelProperty(notes = "name", example = "Ivan", required = true)
-    private String name;
-
-    @NotBlank
-    @ApiModelProperty(notes = "surname", example = "Ivanov", required = true)
-    private String surname;
-
-    @NotBlank
-    @ApiModelProperty(notes = "patronymic", example = "Ivanovich", required = true)
-    private String patronymic;
+    @NotNull
+    private FullNameDto fullName;
 
     @ApiModelProperty(notes = "birthDate", example = "2003-04-04T04:44:44.290Z", required = false)
     private Date birthDate;

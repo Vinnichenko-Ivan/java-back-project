@@ -1,8 +1,10 @@
 package com.hits.friends.controller;
 
+import com.hits.friends.dto.AddRelationDto;
 import com.hits.friends.dto.FriendDto;
 import com.hits.friends.dto.FullFriendDto;
 import com.hits.common.exception.NotImplementedException;
+import com.hits.friends.service.FriendshipService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -20,6 +22,7 @@ import java.util.UUID;
 @Validated
 public class FriendsController {
 
+    private final FriendshipService friendshipService;
     @PostMapping(value = "/friends")
     List<FriendDto> getFriends() {
         throw new NotImplementedException();
@@ -31,8 +34,8 @@ public class FriendsController {
     }
 
     @PostMapping(value = "/friend/add")
-    void addFriends(@PathParam("id")UUID uuid) {
-        throw new NotImplementedException();
+    void addFriends(AddRelationDto addRelationDto) {
+        friendshipService.addFriend(addRelationDto);
     }
 
 

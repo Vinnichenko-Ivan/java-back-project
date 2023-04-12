@@ -1,6 +1,6 @@
 package com.hits.friends.service;
 
-import com.hits.friends.dto.NameSyncDto;
+import com.hits.common.dto.user.NameSyncDto;
 
 public interface CommonService {
 

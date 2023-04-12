@@ -3,6 +3,7 @@ package com.hits.user.service.impl;
 import com.hits.common.dto.user.NameSyncDto;
 import com.hits.common.exception.AlreadyExistException;
 import com.hits.common.exception.ExternalServiceErrorException;
+import com.hits.common.service.ApiKeyProvider;
 import com.hits.user.dto.*;
 import com.hits.user.exception.BadCredentialsException;
 import com.hits.user.mapper.UserMapper;
@@ -13,10 +14,15 @@ import com.hits.user.service.JwtService;
 import com.hits.user.service.PasswordService;
 import com.hits.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +35,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordService passwordService;
 
     private final FriendService friendService;
+
+    private final ApiKeyProvider apiKeyProvider;
 
 
     @Override
@@ -54,7 +62,7 @@ public class UserServiceImpl implements UserService {
             if(passwordService.comparison(credentialsDto.getPassword(), user.getPassword()))
             {
 //                try {
-//                    friendService.nameSynchronization(new NameSyncDto());
+//                    friendService.nameSynchronization(new NameSyncDto(), apiKeyProvider.getKey());
 //                }
 //                catch (Exception e)
 //                {
@@ -106,5 +114,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getMe() {
         return userMapper.map(jwtService.getUser());
+    }
+
+    @Override
+    public UsersDto getUsers(UsersQueryDto usersQueryDto) {
+        UsersDto usersDto = new UsersDto();
+
+        int limit = usersQueryDto.getPaginationQueryDto().getSize();
+        int offset = limit * usersQueryDto.getPaginationQueryDto().getPageNumber();
+        usersDto.setUsers(userRepository.findAll(limit, offset).stream().map(userMapper::map).collect(Collectors.toList()));
+        PaginationDto paginationDto = new PaginationDto();
+        paginationDto.setMaxPage(userRepository.findAll().size());
+        paginationDto.setPageNumber( usersQueryDto.getPaginationQueryDto().getPageNumber());
+        paginationDto.setSize(usersDto.getUsers().size());
+        usersDto.setPaginationDto(paginationDto);
+        return usersDto;
     }
 }

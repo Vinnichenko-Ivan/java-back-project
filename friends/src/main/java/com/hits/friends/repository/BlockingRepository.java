@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface BlockingRepository extends CrudRepository<Blocking, UUID> {
-
     List<Blocking> getAllByTargetUser(UUID id);
+
+    Blocking getByMainUserAndTargetUser(UUID mainUser, UUID targetUser);
+
+    Boolean existsByMainUserAndTargetUser(UUID mainUser, UUID targetUser);
 }

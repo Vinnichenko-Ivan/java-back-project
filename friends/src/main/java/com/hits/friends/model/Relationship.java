@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
 import java.util.Date;
 import java.util.UUID;
 
@@ -26,4 +27,11 @@ public class Relationship {
     private String nameTarget;
     private String surnameTarget;
     private String patronymicTarget;
+
+    @PrePersist
+    public void generate()
+    {
+        this.dateStart = new Date(System.currentTimeMillis());
+        this.id = java.util.UUID.randomUUID();
+    }
 }

@@ -1,6 +1,7 @@
 package com.hits.user.dto;
 
 import com.hits.common.dto.user.FullNameDto;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.validation.annotation.Validated;
 
@@ -14,21 +15,24 @@ import static com.hits.user.config.RegexConfig.*;
 @Data
 @Validated
 public class UserFiltersDto {
-    @NotNull
-    @Pattern(regexp = LOGIN)
     private String login;
 
-    @NotNull
-    @Pattern(regexp = EMAIL)
     private String email;
 
-    private FullNameDto fullName;
-    
-    @NotNull
-    @Pattern(regexp = PHONE)
+    @ApiModelProperty(notes = "name", example = "Ivan")
+    private String name;
+
+    @ApiModelProperty(notes = "surname", example = "Ivanov")
+    private String surname;
+
+    @ApiModelProperty(notes = "patronymic", example = "Ivanovich")
+    private String patronymic;
+
     private String phone;
 
     private String city;
 
-    private UUID avatarId;
+    private Date birthDate;
+
+    private Date registrationDate;
 }

@@ -1,6 +1,7 @@
 package com.hits.friends.service.impl;
 
-import com.hits.friends.dto.NameSyncDto;
+import com.hits.common.dto.user.NameSyncDto;
+import com.hits.common.service.JwtProvider;
 import com.hits.friends.mapper.BlockingMapper;
 import com.hits.friends.mapper.CommonMapper;
 import com.hits.friends.mapper.FriendshipMapper;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +28,8 @@ public class CommonServiceImpl implements CommonService {
 
     private final BlockingMapper blockingMapper;
     private final CommonMapper commonMapper;
+
+    private final JwtProvider jwtProvider;
 
     @Override
     public void synchronise(NameSyncDto nameSyncDto) {

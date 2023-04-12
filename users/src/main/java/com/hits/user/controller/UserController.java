@@ -40,7 +40,7 @@ public class UserController {
     @GetMapping("/users")
     public UsersDto getUsers(@Valid @RequestBody UsersQueryDto usersQueryDto)
     {
-        throw new NotImplementedException();
+        return userService.getUsers(usersQueryDto); //TODO фильтры
     }
 
     @PostMapping("/user")

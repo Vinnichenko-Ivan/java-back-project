@@ -1,6 +1,7 @@
 package com.hits.friends.service;
 
-public interface BlockingService {
+import com.hits.friends.dto.AddRelationDto;
 
-    void addBlock();
+public interface BlockingService {
+    void addBlock(AddRelationDto addRelationDto);
 }

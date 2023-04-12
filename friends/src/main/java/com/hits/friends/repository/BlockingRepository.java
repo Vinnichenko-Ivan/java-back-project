@@ -9,5 +9,5 @@ import java.util.UUID;
 
 public interface BlockingRepository extends CrudRepository<Blocking, UUID> {
 
-    List<Blocking> getAllByBlockUser(UUID id);
+    List<Blocking> getAllByTargetUser(UUID id);
 }

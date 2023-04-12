@@ -1,7 +1,8 @@
 package com.hits.user.service;
 
+import com.hits.common.dto.user.NameSyncDto;
 import com.hits.user.config.ClientConfiguration;
-import com.hits.user.dto.NameSyncDto;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

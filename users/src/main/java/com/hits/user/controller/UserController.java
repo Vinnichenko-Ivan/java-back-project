@@ -1,7 +1,7 @@
 package com.hits.user.controller;
 
+import com.hits.common.exception.NotImplementedException;
 import com.hits.user.dto.*;
-import com.hits.user.exception.NotImplementedException;
 import com.hits.user.service.UserService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;

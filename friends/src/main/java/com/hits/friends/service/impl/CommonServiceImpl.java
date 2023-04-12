@@ -2,6 +2,7 @@ package com.hits.friends.service.impl;
 
 import com.hits.friends.dto.NameSyncDto;
 import com.hits.friends.mapper.BlockingMapper;
+import com.hits.friends.mapper.CommonMapper;
 import com.hits.friends.mapper.FriendshipMapper;
 import com.hits.friends.model.Blocking;
 import com.hits.friends.model.Friendship;
@@ -22,19 +23,21 @@ public class CommonServiceImpl implements CommonService {
     private final BlockingRepository blockingRepository;
 
     private final FriendshipMapper friendshipMapper;
+
     private final BlockingMapper blockingMapper;
+    private final CommonMapper commonMapper;
 
     @Override
     public void synchronise(NameSyncDto nameSyncDto) {
-        List<Friendship> friendships = friendsRepository.getAllByFriendUser(nameSyncDto.getId());
+        List<Friendship> friendships = friendsRepository.getAllByTargetUser(nameSyncDto.getId());
         List<Friendship> newFriendships = friendships.stream()
-                .peek(friendship -> friendshipMapper.map(friendship, nameSyncDto))
+                .peek(friendship -> commonMapper.map(friendship, nameSyncDto))
                 .collect(Collectors.toList());
         friendsRepository.saveAll(newFriendships);
 
-        List<Blocking> listBlocking = blockingRepository.getAllByBlockUser(nameSyncDto.getId());
+        List<Blocking> listBlocking = blockingRepository.getAllByTargetUser(nameSyncDto.getId());
         List<Blocking> newBlocking = listBlocking.stream()
-                .peek(blocking -> blockingMapper.map(blocking, nameSyncDto))
+                .peek(blocking -> commonMapper.map(blocking, nameSyncDto))
                 .collect(Collectors.toList());
         blockingRepository.saveAll(newBlocking);
     }

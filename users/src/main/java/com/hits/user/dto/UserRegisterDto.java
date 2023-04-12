@@ -1,6 +1,7 @@
 package com.hits.user.dto;
 
 
+import com.hits.common.dto.user.FullNameDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

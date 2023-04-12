@@ -1,9 +1,10 @@
 package com.hits.user.service.impl;
 
+import com.hits.common.dto.user.NameSyncDto;
+import com.hits.common.exception.AlreadyExistException;
+import com.hits.common.exception.ExternalServiceErrorException;
 import com.hits.user.dto.*;
 import com.hits.user.exception.BadCredentialsException;
-import com.hits.user.exception.ExternalServiceErrorException;
-import com.hits.user.exception.UserAlreadyExistException;
 import com.hits.user.mapper.UserMapper;
 import com.hits.user.model.User;
 import com.hits.user.repository.UserRepository;
@@ -33,10 +34,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto register(UserRegisterDto userRegisterDto) {
         if(userRepository.existsByLogin(userRegisterDto.getLogin())) {
-            throw new UserAlreadyExistException("login is used");
+            throw new AlreadyExistException("login is used");
         }
         else if(userRepository.existsByEmail(userRegisterDto.getEmail())) {
-            throw new UserAlreadyExistException("email is used");
+            throw new AlreadyExistException("email is used");
         }
         else {
             User user = userMapper.map(userRegisterDto);
@@ -52,13 +53,13 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.getByLogin(credentialsDto.getLogin());
             if(passwordService.comparison(credentialsDto.getPassword(), user.getPassword()))
             {
-                try {
-                    friendService.nameSynchronization(new NameSyncDto());
-                }
-                catch (Exception e)
-                {
-                    throw new ExternalServiceErrorException("friend service error");
-                }
+//                try {
+//                    friendService.nameSynchronization(new NameSyncDto());
+//                }
+//                catch (Exception e)
+//                {
+//                    throw new ExternalServiceErrorException("friend service error");
+//                }
 
                 UserDto userDto = userMapper.map(user);
                 String token = jwtService.generateAccessToken(user);
@@ -80,10 +81,10 @@ public class UserServiceImpl implements UserService {
     public UserDto putUser(UserEditDto userEditDto) {
         if(userRepository.existsByLogin(userEditDto.getLogin())) {
             if(userRepository.existsByLogin(userEditDto.getLogin())) {
-                throw new UserAlreadyExistException("login is used");
+                throw new AlreadyExistException("login is used");
             }
             else if(userRepository.existsByEmail(userEditDto.getEmail())) {
-                throw new UserAlreadyExistException("email is used");
+                throw new AlreadyExistException("email is used");
             }
             User user = userRepository.getByLogin(userEditDto.getLogin());
             if(user.getPassword().equals(userEditDto.getPassword()))

@@ -9,8 +9,4 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface BlockingMapper {
 
-    @Mapping(target = "nameBlocked", source = "fullName.name")
-    @Mapping(target = "surnameBlocked", source = "fullName.surname")
-    @Mapping(target = "patronymicBlocked", source = "fullName.patronymic")
-    void map(@MappingTarget Blocking blocking, NameSyncDto nameSyncDto);
 }

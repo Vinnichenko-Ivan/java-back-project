@@ -8,6 +8,6 @@ import java.util.UUID;
 
 public interface FriendsRepository extends CrudRepository<Friendship, UUID> {
 
-    List<Friendship> getAllByFriendUser(UUID id);
+    List<Friendship> getAllByTargetUser(UUID id);
 
 }

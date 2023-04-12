@@ -1,6 +1,6 @@
 package com.hits.user.config;
 
-import com.hits.user.filter.JwtFilter;
+import com.hits.common.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

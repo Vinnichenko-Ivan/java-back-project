@@ -9,23 +9,9 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name="friendship",  uniqueConstraints={
-        @UniqueConstraint(columnNames={"main_user", "friend_user"}),
+        @UniqueConstraint(columnNames={"main_user", "target_user"}),
 })
-public class Friendship {
+public class Friendship extends Relationship {
 
-    @Id
-    private UUID id;
 
-    private Date dateStart;
-
-    private Date dateEnd;
-
-    @Column(name = "main_user")
-    private UUID mainUser;
-    @Column(name = "friend_user")
-    private UUID friendUser;
-
-    private String nameFriend;
-    private String surnameFriend;
-    private String patronymicFriend;
 }

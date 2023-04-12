@@ -1,5 +1,6 @@
 package com.hits.user.dto;
 
+import com.hits.common.dto.user.FullNameDto;
 import lombok.Data;
 import org.springframework.validation.annotation.Validated;
 

@@ -9,22 +9,8 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name="blocking",  uniqueConstraints={
-        @UniqueConstraint(columnNames={"main_user", "block_user"}),
+        @UniqueConstraint(columnNames={"main_user", "target_user"}),
 })
-public class Blocking {
+public class Blocking extends Relationship  {
 
-    @Id
-    private UUID id;
-
-    private Date dateStart;
-
-    private Date dateEnd;
-    @Column(name = "main_user")
-    private UUID mainUser;
-    @Column(name = "block_user")
-    private UUID blockUser;
-
-    private String nameBlocked;
-    private String surnameBlocked;
-    private String patronymicBlocked;
 }

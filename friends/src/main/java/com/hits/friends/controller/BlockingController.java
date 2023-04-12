@@ -2,7 +2,7 @@ package com.hits.friends.controller;
 
 import com.hits.friends.dto.FriendDto;
 import com.hits.friends.dto.FullFriendDto;
-import com.hits.friends.exception.NotImplementedException;
+import com.hits.common.exception.NotImplementedException;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

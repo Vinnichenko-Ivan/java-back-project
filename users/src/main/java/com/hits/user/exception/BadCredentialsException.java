@@ -1,5 +1,6 @@
 package com.hits.user.exception;
 
+import com.hits.common.exception.CustomException;
 import org.springframework.http.HttpStatus;
 
 public class BadCredentialsException extends CustomException {

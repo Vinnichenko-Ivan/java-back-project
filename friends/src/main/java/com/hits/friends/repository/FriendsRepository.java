@@ -14,4 +14,6 @@ public interface FriendsRepository extends CrudRepository<Friendship, UUID> {
     Friendship getByMainUserAndTargetUser(UUID mainUser, UUID targetUser);
 
     Boolean existsByMainUserAndTargetUser(UUID mainUser, UUID targetUser);
+
+    List<Friendship> getAllByMainUser(UUID mainUser);
 }

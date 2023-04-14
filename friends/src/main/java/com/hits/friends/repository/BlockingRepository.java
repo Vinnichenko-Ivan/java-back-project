@@ -13,4 +13,6 @@ public interface BlockingRepository extends CrudRepository<Blocking, UUID> {
     Blocking getByMainUserAndTargetUser(UUID mainUser, UUID targetUser);
 
     Boolean existsByMainUserAndTargetUser(UUID mainUser, UUID targetUser);
+
+    List<Blocking> getAllByMainUser(UUID mainUser);
 }

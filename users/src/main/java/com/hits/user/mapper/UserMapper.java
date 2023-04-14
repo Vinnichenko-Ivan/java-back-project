@@ -1,6 +1,7 @@
 package com.hits.user.mapper;
 
 
+import com.hits.common.dto.user.NameSyncDto;
 import com.hits.user.dto.UserDto;
 import com.hits.user.dto.UserEditDto;
 import com.hits.user.model.User;
@@ -27,4 +28,9 @@ public interface UserMapper {
     @Mapping(target = "fullName.surname", source = "surname")
     @Mapping(target = "fullName.patronymic", source = "patronymic")
     UserDto map(User user);
+
+    @Mapping(target = "fullName.name", source = "name")
+    @Mapping(target = "fullName.surname", source = "surname")
+    @Mapping(target = "fullName.patronymic", source = "patronymic")
+    NameSyncDto mapToSync(User user);
 }

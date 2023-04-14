@@ -18,7 +18,7 @@ import static com.hits.user.config.RegexConfig.LOGIN;
 
 @Api
 @RestController
-@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "users")
 @RequiredArgsConstructor
 @Validated
 public class UserController {
@@ -37,7 +37,7 @@ public class UserController {
         return userService.authorize(credentialsDto);
     }
 
-    @GetMapping("/users")
+    @PostMapping("/users")
     public UsersDto getUsers(@Valid @RequestBody UsersQueryDto usersQueryDto)
     {
         return userService.getUsers(usersQueryDto); //TODO фильтры
@@ -46,7 +46,7 @@ public class UserController {
     @PostMapping("/user")
     public UserDto getUser(@Valid @NotNull @Pattern(regexp = LOGIN) String login)
     {
-        throw new NotImplementedException();
+        return userService.getUser(login);
     }
 
     @GetMapping("/me")

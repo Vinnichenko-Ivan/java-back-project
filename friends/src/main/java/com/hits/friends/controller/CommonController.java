@@ -1,20 +1,20 @@
 package com.hits.friends.controller;
 
 import com.hits.common.dto.user.NameSyncDto;
+import com.hits.common.exception.NotImplementedException;
 import com.hits.common.service.ApiKeyProvider;
 import com.hits.friends.service.CommonService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Api
 @RestController
-@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/common")
+@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/friends/common")
 @RequiredArgsConstructor
 @Validated
 public class CommonController {
@@ -27,5 +27,11 @@ public class CommonController {
     void synchronise(NameSyncDto nameSyncDto, @RequestHeader("api-key") String key) {
         apiKeyProvider.checkKey(key);
         commonService.synchronise(nameSyncDto);
+    }
+
+    @GetMapping(value = "blocking")
+    Boolean checkBlocking(UUID mainId, UUID targetId, @RequestHeader("api-key") String key) {
+        apiKeyProvider.checkKey(key);
+        throw new NotImplementedException();
     }
 }

@@ -1,9 +1,11 @@
 package com.hits.user.service.impl;
 
-import com.hits.common.dto.user.NameSyncDto;
+import com.hits.common.dto.user.PaginationDto;
 import com.hits.common.exception.AlreadyExistException;
 import com.hits.common.exception.ExternalServiceErrorException;
+import com.hits.common.exception.NotFoundException;
 import com.hits.common.service.ApiKeyProvider;
+import com.hits.common.service.JwtProvider;
 import com.hits.user.dto.*;
 import com.hits.user.exception.BadCredentialsException;
 import com.hits.user.mapper.UserMapper;
@@ -14,6 +16,8 @@ import com.hits.user.service.JwtService;
 import com.hits.user.service.PasswordService;
 import com.hits.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +25,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +43,8 @@ public class UserServiceImpl implements UserService {
     private final FriendService friendService;
 
     private final ApiKeyProvider apiKeyProvider;
+
+    private final JwtProvider jwtProvider;
 
 
     @Override
@@ -61,14 +69,6 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.getByLogin(credentialsDto.getLogin());
             if(passwordService.comparison(credentialsDto.getPassword(), user.getPassword()))
             {
-//                try {
-//                    friendService.nameSynchronization(new NameSyncDto(), apiKeyProvider.getKey());
-//                }
-//                catch (Exception e)
-//                {
-//                    throw new ExternalServiceErrorException("friend service error");
-//                }
-
                 UserDto userDto = userMapper.map(user);
                 String token = jwtService.generateAccessToken(user);
                 HttpHeaders responseHeaders = new HttpHeaders();
@@ -85,26 +85,29 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+//    @Transactional
     @Override
     public UserDto putUser(UserEditDto userEditDto) {
-        if(userRepository.existsByLogin(userEditDto.getLogin())) {
+        UUID id = jwtProvider.getId();
+        if(userRepository.existsById(id)) {
             if(userRepository.existsByLogin(userEditDto.getLogin())) {
                 throw new AlreadyExistException("login is used");
             }
             else if(userRepository.existsByEmail(userEditDto.getEmail())) {
                 throw new AlreadyExistException("email is used");
             }
-            User user = userRepository.getByLogin(userEditDto.getLogin());
-            if(user.getPassword().equals(userEditDto.getPassword()))
-            {
-                userMapper.map(user, userEditDto);
-                user = userRepository.save(user);
-                return userMapper.map(user);
+            User user = userRepository.getById(id);
+
+            userMapper.map(user, userEditDto);
+            user = userRepository.save(user);
+            try {
+                friendService.nameSynchronization(userMapper.mapToSync(user), apiKeyProvider.getKey());
             }
-            else
+            catch (Exception e)
             {
-                throw new BadCredentialsException();
+                throw new ExternalServiceErrorException("friend service error");
             }
+            return userMapper.map(user);
         }
         else {
             throw new BadCredentialsException();
@@ -120,14 +123,65 @@ public class UserServiceImpl implements UserService {
     public UsersDto getUsers(UsersQueryDto usersQueryDto) {
         UsersDto usersDto = new UsersDto();
 
-        int limit = usersQueryDto.getPaginationQueryDto().getSize();
-        int offset = limit * usersQueryDto.getPaginationQueryDto().getPageNumber();
-        usersDto.setUsers(userRepository.findAll(limit, offset).stream().map(userMapper::map).collect(Collectors.toList()));
+        int page = usersQueryDto.getPaginationQueryDto().getPageNumber() - 1;
+        int size = usersQueryDto.getPaginationQueryDto().getSize();
+
+        UserFiltersDto userFiltersDto = usersQueryDto.getUserFiltersDto();
+        UserSortFieldDto userSortFieldDto = usersQueryDto.getUserSortFieldDto();
+
+        List<Sort.Order> orders = List.of(
+                new Sort.Order(userSortFieldDto.getLoginSD(), "login"),
+                new Sort.Order(userSortFieldDto.getEmailSD(), "email"),
+                new Sort.Order(userSortFieldDto.getNameSD(), "name"),
+                new Sort.Order(userSortFieldDto.getSurnameSD(), "surname"),
+                new Sort.Order(userSortFieldDto.getPatronymicSD(), "patronymic"),
+                new Sort.Order(userSortFieldDto.getPhoneSD(), "phone"),
+                new Sort.Order(userSortFieldDto.getCitySD(), "city"),
+                new Sort.Order(userSortFieldDto.getBirthDateSD(), "birth_date"),
+                new Sort.Order(userSortFieldDto.getRegistrationDateSD(), "registration_date")
+        );
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
+        String login = toParam(userFiltersDto.getLogin());
+        String email = toParam(userFiltersDto.getEmail());
+        String name = toParam(userFiltersDto.getName());
+        String surname = toParam(userFiltersDto.getSurname());
+        String patronymic = toParam(userFiltersDto.getPatronymic());
+        String phone = toParam(userFiltersDto.getPhone());
+        String city = toParam(userFiltersDto.getCity());
+
+        Page<User> users =  userRepository.getAllByFilter(
+                login,
+                email,
+                name,
+                surname,
+                patronymic,
+                phone,
+                city,
+                pageable);
+
+        usersDto.setUsers(users.stream().map(userMapper::map).collect(Collectors.toList()));
+
         PaginationDto paginationDto = new PaginationDto();
-        paginationDto.setMaxPage(userRepository.findAll().size());
-        paginationDto.setPageNumber( usersQueryDto.getPaginationQueryDto().getPageNumber());
+        paginationDto.setMaxPage(users.getTotalPages());
+        paginationDto.setPageNumber(usersQueryDto.getPaginationQueryDto().getPageNumber());
         paginationDto.setSize(usersDto.getUsers().size());
+
         usersDto.setPaginationDto(paginationDto);
         return usersDto;
+    }
+
+    @Override
+    public UserDto getUser(String login) {
+        User user = userRepository.getByLogin(login);
+        if(user == null)
+        {
+            throw new NotFoundException("user not found");//TODO проверка на блок
+        }
+        return userMapper.map(user);
+    }
+
+    private String toParam(String str) {
+        return str.toLowerCase();
     }
 }

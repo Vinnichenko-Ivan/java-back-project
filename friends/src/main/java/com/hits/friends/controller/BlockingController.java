@@ -1,10 +1,10 @@
 package com.hits.friends.controller;
 
 import com.hits.friends.dto.AddRelationDto;
-import com.hits.friends.dto.FriendDto;
-import com.hits.friends.dto.FullFriendDto;
+
+import com.hits.friends.dto.FullRelationDto;
 import com.hits.common.exception.NotImplementedException;
-import com.hits.friends.model.Blocking;
+import com.hits.friends.dto.RelationDto;
 import com.hits.friends.service.BlockingService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Api
 @RestController
-@RequestMapping(value = "/blocking", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/friends/blocking", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Validated
 public class BlockingController {
@@ -26,12 +26,12 @@ public class BlockingController {
     private final BlockingService blockingService;
 
     @PostMapping(value = "/blocking")
-    List<FriendDto> getBlocking() {
+    List<RelationDto> getBlocking() {
         throw new NotImplementedException();
     }
 
     @GetMapping(value = "/blocking")
-    FullFriendDto getBlocking(@PathParam("id") UUID uuid) {
+    FullRelationDto getBlocking(@PathParam("id") UUID uuid) {
         throw new NotImplementedException();
     }
 
@@ -43,7 +43,7 @@ public class BlockingController {
 
 
     @DeleteMapping(value = "/blocking")
-    FullFriendDto deleteBlocking(@PathParam("id")UUID uuid) {
+    FullRelationDto deleteBlocking(@PathParam("id")UUID uuid) {
         throw new NotImplementedException();
     }
 

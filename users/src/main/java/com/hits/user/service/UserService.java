@@ -11,6 +11,8 @@ public interface UserService {
     UserDto putUser(UserEditDto userEditDto);
     UserDto getMe();
 
+    UserDto getUser(String login);
+
     UsersDto getUsers(UsersQueryDto usersQueryDto);
 }
 

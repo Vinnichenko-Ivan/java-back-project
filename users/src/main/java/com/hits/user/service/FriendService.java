@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient(name = "friends", url = "http://localhost:8082/common", configuration = ClientConfiguration.class)
+@FeignClient(name = "friends", url = "http://localhost:8082/friends/common", configuration = ClientConfiguration.class)
 public interface FriendService {
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/synchronise", headers = "api-key")

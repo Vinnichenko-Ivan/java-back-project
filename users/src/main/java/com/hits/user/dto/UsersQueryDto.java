@@ -1,5 +1,6 @@
 package com.hits.user.dto;
 
+import com.hits.common.dto.user.PaginationQueryDto;
 import lombok.Data;
 
 @Data

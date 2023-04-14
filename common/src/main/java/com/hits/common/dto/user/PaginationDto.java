@@ -1,4 +1,4 @@
-package com.hits.user.dto;
+package com.hits.common.dto.user;
 
 import lombok.Data;
 

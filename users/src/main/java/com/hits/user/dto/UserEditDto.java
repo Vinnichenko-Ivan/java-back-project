@@ -21,10 +21,6 @@ public class UserEditDto {
     @Pattern(regexp = EMAIL)
     private String email;
 
-    @NotNull
-    @Pattern(regexp = PASSWORD)
-    private String password;
-
     private FullNameDto fullName;
 
     private Date birthDate;

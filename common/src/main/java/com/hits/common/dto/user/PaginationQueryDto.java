@@ -1,9 +1,13 @@
-package com.hits.user.dto;
+package com.hits.common.dto.user;
 
 import lombok.Data;
 
+import javax.validation.constraints.Min;
+
 @Data
 public class PaginationQueryDto {
+    @Min(1)
     private int pageNumber;
+    @Min(1)
     private int size;
 }

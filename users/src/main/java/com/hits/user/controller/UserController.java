@@ -58,7 +58,7 @@ public class UserController {
     @PutMapping("/me")
     public UserDto putMe(@Valid @RequestBody UserEditDto userEditDto)
     {
-        throw new NotImplementedException();
+        return userService.putUser(userEditDto);
     }
 
 }

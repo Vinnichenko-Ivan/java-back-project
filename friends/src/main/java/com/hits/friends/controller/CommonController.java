@@ -1,5 +1,6 @@
 package com.hits.friends.controller;
 
+import com.hits.common.dto.user.CheckDto;
 import com.hits.common.dto.user.NameSyncDto;
 import com.hits.common.exception.NotImplementedException;
 import com.hits.common.service.ApiKeyProvider;
@@ -30,8 +31,8 @@ public class CommonController {
     }
 
     @GetMapping(value = "blocking")
-    Boolean checkBlocking(UUID mainId, UUID targetId, @RequestHeader("api-key") String key) {
+    Boolean checkBlocking(CheckDto checkDto, @RequestHeader("api-key") String key) {
         apiKeyProvider.checkKey(key);
-        throw new NotImplementedException();
+        return commonService.checkBlocking(checkDto);
     }
 }

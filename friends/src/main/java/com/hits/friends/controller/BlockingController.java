@@ -1,10 +1,9 @@
 package com.hits.friends.controller;
 
-import com.hits.friends.dto.AddRelationDto;
+import com.hits.common.dto.user.CheckDto;
+import com.hits.friends.dto.*;
 
-import com.hits.friends.dto.FullRelationDto;
 import com.hits.common.exception.NotImplementedException;
-import com.hits.friends.dto.RelationDto;
 import com.hits.friends.service.BlockingService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +25,13 @@ public class BlockingController {
     private final BlockingService blockingService;
 
     @PostMapping(value = "/blocking")
-    List<RelationDto> getBlocking() {
-        throw new NotImplementedException();
+    RelationsDto getBlocking(QueryRelationDto queryRelationDto) {
+        return blockingService.getBlocking(queryRelationDto);
     }
 
-    @GetMapping(value = "/blocking")
-    FullRelationDto getBlocking(@PathParam("id") UUID uuid) {
-        throw new NotImplementedException();
+    @GetMapping(value = "/blocking/{id}")
+    FullRelationDto getBlocking(@PathVariable("id") UUID uuid) {
+        return blockingService.getBlocking(uuid);
     }
 
     @PostMapping(value = "/blocking/add")
@@ -40,11 +39,9 @@ public class BlockingController {
         blockingService.addBlock(addRelationDto);
     }
 
-
-
-    @DeleteMapping(value = "/blocking")
-    FullRelationDto deleteBlocking(@PathParam("id")UUID uuid) {
-        throw new NotImplementedException();
+    @DeleteMapping(value = "/blocking/{id}")
+    FullRelationDto deleteBlocking(@PathVariable("id")UUID uuid) {
+        return blockingService.deleteBlocking(uuid);
     }
 
     @PostMapping(value = "/blocking/find")
@@ -52,8 +49,8 @@ public class BlockingController {
         throw new NotImplementedException();
     }
 
-    @GetMapping(value = "/blocking/check")
-    void checkBlocking() {
-        throw new NotImplementedException();
+    @GetMapping(value = "/blocking/check/{id}")
+    Boolean checkBlocking(@PathVariable UUID id) {
+        return blockingService.checkBlocking(id);
     }
 }

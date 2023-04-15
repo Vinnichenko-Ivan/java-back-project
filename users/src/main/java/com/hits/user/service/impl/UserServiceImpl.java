@@ -1,8 +1,10 @@
 package com.hits.user.service.impl;
 
+import com.hits.common.dto.user.CheckDto;
 import com.hits.common.dto.user.PaginationDto;
 import com.hits.common.exception.AlreadyExistException;
 import com.hits.common.exception.ExternalServiceErrorException;
+import com.hits.common.exception.ForbiddenException;
 import com.hits.common.exception.NotFoundException;
 import com.hits.common.service.ApiKeyProvider;
 import com.hits.common.service.JwtProvider;
@@ -177,6 +179,18 @@ public class UserServiceImpl implements UserService {
         if(user == null)
         {
             throw new NotFoundException("user not found");//TODO проверка на блок
+        }
+
+        Boolean blocked = false;
+
+        try {
+            blocked = friendService.checkBlocking(new CheckDto(jwtService.getUser().getId(), user.getId()), apiKeyProvider.getKey());
+        } catch (Exception e) {
+            throw new ExternalServiceErrorException("friend service error");
+        }
+
+        if(blocked) {
+            throw new ForbiddenException("blocked");
         }
         return userMapper.map(user);
     }

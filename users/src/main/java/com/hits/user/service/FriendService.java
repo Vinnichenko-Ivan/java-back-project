@@ -1,5 +1,6 @@
 package com.hits.user.service;
 
+import com.hits.common.dto.user.CheckDto;
 import com.hits.common.dto.user.NameSyncDto;
 import com.hits.user.config.ClientConfiguration;
 
@@ -13,4 +14,7 @@ public interface FriendService {
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/synchronise", headers = "api-key")
     void nameSynchronization(NameSyncDto nameSyncDto, @RequestHeader("api-key") String key);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/blocking", headers = "api-key")
+    Boolean checkBlocking(CheckDto checkDto, @RequestHeader("api-key") String key);
 }

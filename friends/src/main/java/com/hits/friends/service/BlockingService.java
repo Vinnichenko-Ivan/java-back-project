@@ -1,9 +1,6 @@
 package com.hits.friends.service;
 
-import com.hits.friends.dto.AddRelationDto;
-
-import com.hits.friends.dto.FullRelationDto;
-import com.hits.friends.dto.RelationDto;
+import com.hits.friends.dto.*;
 
 import javax.websocket.server.PathParam;
 import java.util.List;
@@ -12,13 +9,13 @@ import java.util.UUID;
 public interface BlockingService {
     void addBlock(AddRelationDto addRelationDto);
 
-    List<RelationDto> getBlocking();
+    RelationsDto getBlocking(QueryRelationDto queryRelationDto);
 
-    FullRelationDto getBlocking(@PathParam("id") UUID uuid);
+    FullRelationDto getBlocking(UUID targetId);
 
-    FullRelationDto deleteBlocking(@PathParam("id")UUID uuid);
+    FullRelationDto deleteBlocking(UUID targetId);
 
     void findBlocking();
 
-    void checkBlocking();
+    Boolean checkBlocking(UUID uuid);
 }

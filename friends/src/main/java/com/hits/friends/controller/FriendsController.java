@@ -1,9 +1,7 @@
 package com.hits.friends.controller;
 
-import com.hits.friends.dto.AddRelationDto;
-import com.hits.friends.dto.FullRelationDto;
+import com.hits.friends.dto.*;
 import com.hits.common.exception.NotImplementedException;
-import com.hits.friends.dto.RelationDto;
 import com.hits.friends.service.FriendshipService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +22,12 @@ public class FriendsController {
 
     private final FriendshipService friendshipService;
     @PostMapping(value = "/friends")
-    List<RelationDto> getFriends() {
-        throw new NotImplementedException();
+    RelationsDto getFriends(QueryRelationDto queryRelationDto) {
+        return friendshipService.getFriend(queryRelationDto);
     }
 
-    @GetMapping(value = "/friend")
-    FullRelationDto getFriend(@PathParam("id")UUID uuid) {
+    @GetMapping(value = "/friend/{id}")
+    FullRelationDto getFriend(@PathVariable UUID id) {
         throw new NotImplementedException();
     }
 
@@ -39,9 +37,9 @@ public class FriendsController {
     }
 
 
-    @DeleteMapping(value = "/friend")
-    FullRelationDto deleteFriend(@PathParam("id")UUID uuid) {
-        throw new NotImplementedException();
+    @DeleteMapping(value = "/friend/{id}")
+    FullRelationDto deleteFriend(@PathVariable UUID id) {
+        return friendshipService.deleteFriend(id);
     }
 
     @PostMapping(value = "/friend/find")

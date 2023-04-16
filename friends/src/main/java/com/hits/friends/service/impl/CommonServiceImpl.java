@@ -65,7 +65,7 @@ public class CommonServiceImpl implements CommonService {
             targetUserExist = userService.checkUser(targetId, apiKeyProvider.getKey());
             mainUserExist = userService.checkUser(mainId, apiKeyProvider.getKey());
         } catch (Exception e) {
-            throw new ExternalServiceErrorException("friend service error");
+            throw new ExternalServiceErrorException("user service error");
         }
 
         if(!targetUserExist){

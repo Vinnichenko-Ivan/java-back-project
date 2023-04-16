@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +26,7 @@ public class BlockingController {
     private final BlockingService blockingService;
 
     @PostMapping(value = "/blocking")
-    RelationsDto getBlocking(QueryRelationDto queryRelationDto) {
+    RelationsDto getBlocking(@Valid @RequestBody QueryRelationDto queryRelationDto) {
         return blockingService.getBlocking(queryRelationDto);
     }
 
@@ -35,7 +36,7 @@ public class BlockingController {
     }
 
     @PostMapping(value = "/blocking/add")
-    void addBlocking(AddRelationDto addRelationDto) {
+    void addBlocking(@Valid @RequestBody AddRelationDto addRelationDto) {
         blockingService.addBlock(addRelationDto);
     }
 

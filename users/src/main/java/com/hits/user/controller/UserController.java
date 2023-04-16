@@ -43,8 +43,8 @@ public class UserController {
         return userService.getUsers(usersQueryDto); //TODO фильтры
     }
 
-    @PostMapping("/user")
-    public UserDto getUser(@Valid @NotNull @Pattern(regexp = LOGIN) String login)
+    @GetMapping("/user/{login}")
+    public UserDto getUser(@Valid @NotNull @Pattern(regexp = LOGIN) @PathVariable String login)
     {
         return userService.getUser(login);
     }

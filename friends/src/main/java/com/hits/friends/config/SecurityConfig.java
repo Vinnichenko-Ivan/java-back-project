@@ -30,7 +30,10 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests(
                         authz -> authz
-                                .anyRequest().permitAll()
+                                .antMatchers("/friends/blocking/**").authenticated()
+                                .antMatchers("/friends/friends/**").authenticated()
+                                .antMatchers("/friends/common/**").permitAll()
+                                .antMatchers("/swagger-ui/**").permitAll()
                                 .and()
                                 .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 ).build();

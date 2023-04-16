@@ -5,6 +5,7 @@ import com.hits.common.dto.user.NameSyncDto;
 import com.hits.user.config.ClientConfiguration;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public interface FriendService {
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/synchronise", headers = "api-key")
-    void nameSynchronization(NameSyncDto nameSyncDto, @RequestHeader("api-key") String key);
+    void nameSynchronization(@RequestBody NameSyncDto nameSyncDto, @RequestHeader("api-key") String key);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/blocking", headers = "api-key")
-    Boolean checkBlocking(CheckDto checkDto, @RequestHeader("api-key") String key);
+    @RequestMapping(method = RequestMethod.POST, value = "/blocking", headers = "api-key")
+    Boolean checkBlocking(@RequestBody CheckDto checkDto, @RequestHeader("api-key") String key);
 }

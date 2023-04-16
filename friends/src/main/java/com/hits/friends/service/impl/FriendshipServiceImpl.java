@@ -85,6 +85,12 @@ public class FriendshipServiceImpl implements FriendshipService {
         int page = queryRelationDto.getPaginationQueryDto().getPageNumber() - 1;
         int size = queryRelationDto.getPaginationQueryDto().getSize();
 
+        if(page < 0) {
+            throw new NotFoundException("index <= 0");
+        }
+        if(size <= 0) {
+            throw new NotFoundException("size <= 0");
+        }
         Pageable pageable = PageRequest.of(page, size, Sort.by(commonService.genOrder(queryRelationDto.getQueryRelationSort())));
 
         String name = queryRelationDto.getQueryRelationFilter().getName().toLowerCase();
@@ -109,5 +115,16 @@ public class FriendshipServiceImpl implements FriendshipService {
         paginationDto.setSize(relationsDto.getRelations().size());
         relationsDto.setPaginationDto(paginationDto);
         return relationsDto;
+    }
+
+    @Override
+    public FullRelationDto getFriend(UUID targetId) {
+        UUID mainId = jwtProvider.getId();
+        Friendship friendship = friendsRepository.getByMainUserAndTargetUser(mainId, targetId);
+        if(friendship == null)
+        {
+            throw new NotFoundException("friendship not found");
+        }
+        return friendshipMapper.mapToFull(friendship);
     }
 }

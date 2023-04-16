@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 @Api
@@ -25,13 +26,13 @@ public class CommonController {
     private final CommonService commonService;
 
     @PatchMapping(value = "/synchronise")
-    void synchronise(NameSyncDto nameSyncDto, @RequestHeader("api-key") String key) {
+    void synchronise(@Valid @RequestBody NameSyncDto nameSyncDto, @RequestHeader("api-key") String key) {
         apiKeyProvider.checkKey(key);
         commonService.synchronise(nameSyncDto);
     }
 
-    @GetMapping(value = "blocking")
-    Boolean checkBlocking(CheckDto checkDto, @RequestHeader("api-key") String key) {
+    @PostMapping(value = "blocking")
+    Boolean checkBlocking(@Valid @RequestBody CheckDto checkDto, @RequestHeader("api-key") String key) {
         apiKeyProvider.checkKey(key);
         return commonService.checkBlocking(checkDto);
     }

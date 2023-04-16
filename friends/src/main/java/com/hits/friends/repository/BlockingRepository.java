@@ -25,19 +25,19 @@ public interface BlockingRepository extends CrudRepository<Blocking, UUID> {
 
     @Query(nativeQuery = true,
             value = "SELECT * FROM blocking\n" +
-            "WHERE\n" +
-            "LOWER(name_target) LIKE '%'|| :name_target ||'%' AND\n" +
-            "LOWER(surname_target) LIKE '%'|| :surname_target ||'%' AND\n" +
-            "LOWER(patronymic_target) LIKE '%'|| :patronymic_target ||'%' AND\n" +
-            "main_user = :main_user AND" +
-            "date_end IS NULL",
+            " WHERE\n" +
+            " LOWER(name_target) LIKE '%'|| :name_target ||'%' AND\n" +
+            " LOWER(surname_target) LIKE '%'|| :surname_target ||'%' AND\n" +
+            " LOWER(patronymic_target) LIKE '%'|| :patronymic_target ||'%' AND\n" +
+            " main_user = :main_user AND" +
+            " date_end IS NULL",
             countQuery = "SELECT count(*) FROM blocking\n" +
-            "WHERE\n" +
-            "LOWER(name_target) LIKE '%'|| :name_target ||'%' AND\n" +
-            "LOWER(surname_target) LIKE '%'|| :surname_target ||'%' AND\n" +
-            "LOWER(patronymic_target) LIKE '%'|| :patronymic_target ||'%' AND\n" +
-            "main_user = :main_user AND \n" +
-            "date_end IS NULL \n")
+            " WHERE\n" +
+            " LOWER(name_target) LIKE '%'|| :name_target ||'%' AND\n" +
+            " LOWER(surname_target) LIKE '%'|| :surname_target ||'%' AND\n" +
+            " LOWER(patronymic_target) LIKE '%'|| :patronymic_target ||'%' AND\n" +
+            " main_user = :main_user AND \n" +
+            " date_end IS NULL \n")
     Page<Blocking> getAllByFilter(@Param("name_target") String name,
                                   @Param("surname_target") String surname,
                                   @Param("patronymic_target") String patronymic,

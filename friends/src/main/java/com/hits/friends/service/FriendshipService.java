@@ -12,4 +12,6 @@ public interface FriendshipService {
     FullRelationDto deleteFriend(UUID targetId);
 
     RelationsDto getFriend(QueryRelationDto queryRelationDto);
+
+    FullRelationDto getFriend(UUID targetId);
 }

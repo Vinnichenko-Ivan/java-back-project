@@ -12,6 +12,7 @@ import static com.hits.user.config.RegexConfig.LOGIN;
 
 @Data
 public class UserDto {
+    private UUID id;
     @NotNull
     @Pattern(regexp = LOGIN)
     private String login;

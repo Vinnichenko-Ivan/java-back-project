@@ -73,6 +73,12 @@ public class BlockingServiceImpl implements BlockingService {
         int page = queryRelationDto.getPaginationQueryDto().getPageNumber() - 1;
         int size = queryRelationDto.getPaginationQueryDto().getSize();
 
+        if(page < 0) {
+            throw new NotFoundException("index <= 0");
+        }
+        if(size <= 0) {
+            throw new NotFoundException("size <= 0");
+        }
         Pageable pageable = PageRequest.of(page, size, Sort.by(commonService.genOrder(queryRelationDto.getQueryRelationSort())));
 
         String name = queryRelationDto.getQueryRelationFilter().getName().toLowerCase();

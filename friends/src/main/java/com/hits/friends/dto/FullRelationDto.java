@@ -9,6 +9,8 @@ import java.util.UUID;
 
 @Data
 public class FullRelationDto {
+    private UUID id;
+
     private Date dateStart;
     private Date dateEnd;
 

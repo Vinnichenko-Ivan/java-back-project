@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.UUID;
@@ -22,17 +23,17 @@ public class FriendsController {
 
     private final FriendshipService friendshipService;
     @PostMapping(value = "/friends")
-    RelationsDto getFriends(QueryRelationDto queryRelationDto) {
+    RelationsDto getFriends(@Valid  @RequestBody QueryRelationDto queryRelationDto) {
         return friendshipService.getFriend(queryRelationDto);
     }
 
     @GetMapping(value = "/friend/{id}")
     FullRelationDto getFriend(@PathVariable UUID id) {
-        throw new NotImplementedException();
+        return friendshipService.getFriend(id);
     }
 
     @PostMapping(value = "/friend/add")
-    void addFriends(AddRelationDto addRelationDto) {
+    void addFriends(@Valid @RequestBody AddRelationDto addRelationDto) {
         friendshipService.addFriend(addRelationDto);
     }
 

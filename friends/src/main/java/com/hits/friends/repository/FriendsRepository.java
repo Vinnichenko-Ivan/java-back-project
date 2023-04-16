@@ -22,20 +22,20 @@ public interface FriendsRepository extends CrudRepository<Friendship, UUID> {
     List<Friendship> getAllByMainUser(UUID mainUser);
 
     @Query(nativeQuery = true,
-            value = "SELECT * FROM friendship\n" +
-                    "WHERE\n" +
-                    "LOWER(name_target) LIKE '%'|| :name_target ||'%' AND\n" +
-                    "LOWER(surname_target) LIKE '%'|| :surname_target ||'%' AND\n" +
-                    "LOWER(patronymic_target) LIKE '%'|| :patronymic_target ||'%' AND\n" +
-                    "main_user = :main_user AND" +
-                    "date_end IS NULL",
+            value = " SELECT * FROM friendship\n" +
+                    " WHERE\n" +
+                    " LOWER(name_target) LIKE '%'|| :name_target ||'%' AND\n" +
+                    " LOWER(surname_target) LIKE '%'|| :surname_target ||'%' AND\n" +
+                    " LOWER(patronymic_target) LIKE '%'|| :patronymic_target ||'%' AND\n" +
+                    " main_user = :main_user AND" +
+                    " date_end IS NULL",
             countQuery = "SELECT count(*) FROM friendship\n" +
-                    "WHERE\n" +
-                    "LOWER(name_target) LIKE '%'|| :name_target ||'%' AND\n" +
-                    "LOWER(surname_target) LIKE '%'|| :surname_target ||'%' AND\n" +
-                    "LOWER(patronymic_target) LIKE '%'|| :patronymic_target ||'%' AND\n" +
-                    "main_user = :main_user AND \n" +
-                    "date_end IS NULL \n")
+                    " WHERE\n" +
+                    " LOWER(name_target) LIKE '%'|| :name_target ||'%' AND\n" +
+                    " LOWER(surname_target) LIKE '%'|| :surname_target ||'%' AND\n" +
+                    " LOWER(patronymic_target) LIKE '%'|| :patronymic_target ||'%' AND\n" +
+                    " main_user = :main_user AND \n" +
+                    " date_end IS NULL \n")
     Page<Friendship> getAllByFilter(@Param("name_target") String name,
                                   @Param("surname_target") String surname,
                                   @Param("patronymic_target") String patronymic,

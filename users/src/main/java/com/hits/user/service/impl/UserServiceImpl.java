@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
         }
         else {
             User user = userMapper.map(userRegisterDto);
-            user.setPassword(passwordService.toHash(user.getPassword()));
+            user.setPassword(passwordService.toHash(userRegisterDto.getPassword()));
             user = userRepository.save(user);
             return userMapper.map(user);
         }
@@ -143,6 +143,10 @@ public class UserServiceImpl implements UserService {
                 new Sort.Order(userSortFieldDto.getRegistrationDateSD(), "registration_date")
         );
 
+        if(page < 0) {
+            throw new NotFoundException("index <= 0");
+        }
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
         String login = toParam(userFiltersDto.getLogin());
         String email = toParam(userFiltersDto.getEmail());
@@ -184,7 +188,8 @@ public class UserServiceImpl implements UserService {
         Boolean blocked = false;
 
         try {
-            blocked = friendService.checkBlocking(new CheckDto(jwtService.getUser().getId(), user.getId()), apiKeyProvider.getKey());
+            CheckDto checkDto = new CheckDto(user.getId(), jwtService.getUser().getId());
+            blocked = friendService.checkBlocking(checkDto, apiKeyProvider.getKey());
         } catch (Exception e) {
             throw new ExternalServiceErrorException("friend service error");
         }

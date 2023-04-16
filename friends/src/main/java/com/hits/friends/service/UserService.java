@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.UUID;
 
-@FeignClient(name = "user", url = "http://localhost:8081/user/common", configuration = ClientConfiguration.class)
+@FeignClient(name = "user", url = "http://localhost:8081/users/common", configuration = ClientConfiguration.class)
 public interface UserService {
     @RequestMapping(method = RequestMethod.GET, value = "/check/{id}", headers = "api-key")
     Boolean checkUser(@PathVariable UUID id, @RequestHeader("api-key") String key);

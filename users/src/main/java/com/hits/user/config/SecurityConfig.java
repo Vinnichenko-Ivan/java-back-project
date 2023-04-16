@@ -28,7 +28,12 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests(
                         authz -> authz
-                                .anyRequest().permitAll()
+                                .antMatchers("/users/me").authenticated()
+                                .antMatchers("/users/users").authenticated()
+                                .antMatchers("/users/user/**").authenticated()
+                                .antMatchers("/users/sign-in/**").permitAll()
+                                .antMatchers("/users/sign-up/**").permitAll()
+                                .antMatchers("/swagger-ui/**").permitAll()
                                 .and()
                                 .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 ).build();

@@ -11,6 +11,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Класс репозиторий, нужен для работы с Friendship
+ */
 public interface FriendsRepository extends CrudRepository<Friendship, UUID> {
 
     List<Friendship> getAllByTargetUser(UUID id);
@@ -21,6 +24,15 @@ public interface FriendsRepository extends CrudRepository<Friendship, UUID> {
 
     List<Friendship> getAllByMainUser(UUID mainUser);
 
+    /**
+     * Запрос получения всех заблокированных по фильтрам
+     * @param name имя
+     * @param surname фамилия
+     * @param patronymic отчество
+     * @param mainId id, если вы у пользователя в друзьях, он тоже появиться.
+     * @param pageable пагинация
+     * @return Page<Friendship>
+     */
     @Query(nativeQuery = true,
             value = " SELECT * FROM friendship\n" +
                     " WHERE\n" +

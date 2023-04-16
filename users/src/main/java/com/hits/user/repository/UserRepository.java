@@ -10,6 +10,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Репозиторий для работы с пользователями.
+ */
 public interface UserRepository extends CrudRepository<User, UUID> {
 
     Boolean existsByLogin(String login);
@@ -27,6 +30,18 @@ public interface UserRepository extends CrudRepository<User, UUID> {
             nativeQuery = true)
     List<User> findAll(int limit, int offset);
 
+    /**
+     * Метод получения пользователей по фильтрам
+     * @param login логин
+     * @param email почта
+     * @param name имя
+     * @param surname фамилия
+     * @param patronymic отчество
+     * @param phone телефон
+     * @param city город
+     * @param pageable пагинация и сортировка
+     * @return Page<User>
+     */
     @Query(value = "SELECT * FROM users\n" +
             "WHERE\n" +
             "    LOWER(login) LIKE '%'|| :login ||'%' AND\n" +

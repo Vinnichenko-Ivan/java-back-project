@@ -14,7 +14,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Класс репозиторий, нужен для работы с Blocking
+ */
 public interface BlockingRepository extends CrudRepository<Blocking, UUID> {
+
     List<Blocking> getAllByTargetUser(UUID id);
 
     Blocking getByMainUserAndTargetUser(UUID mainUser, UUID targetUser);
@@ -23,6 +27,15 @@ public interface BlockingRepository extends CrudRepository<Blocking, UUID> {
 
     List<Blocking> getAllByMainUser(UUID mainUser);
 
+    /**
+     * Запрос получения всех заблокированных по фильтрам
+     * @param name имя
+     * @param surname фамилия
+     * @param patronymic отчество
+     * @param mainId id
+     * @param pageable пагинация
+     * @return Page<Blocking>
+     */
     @Query(nativeQuery = true,
             value = "SELECT * FROM blocking\n" +
             " WHERE\n" +

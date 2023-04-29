@@ -12,6 +12,7 @@ import com.hits.friends.mapper.CommonMapper;
 import com.hits.friends.mapper.FriendshipMapper;
 import com.hits.friends.model.Blocking;
 import com.hits.friends.model.Friendship;
+import com.hits.friends.model.Relationship_;
 import com.hits.friends.repository.BlockingRepository;
 import com.hits.friends.repository.FriendsRepository;
 import com.hits.friends.service.CommonService;
@@ -85,10 +86,10 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public List<Sort.Order> genOrder(QueryRelationSort queryRelationSort) {
         return List.of(
-                new Sort.Order(queryRelationSort.getDateSD(), "date_start"),
-                new Sort.Order(queryRelationSort.getNameSD(), "name_target"),
-                new Sort.Order(queryRelationSort.getPatronymicSD(), "patronymic_target"),
-                new Sort.Order(queryRelationSort.getSurnameSD(), "surname_target")
+                new Sort.Order(queryRelationSort.getDateSD(), Relationship_.dateStart.getName()),
+                new Sort.Order(queryRelationSort.getNameSD(), Relationship_.nameTarget.getName()),
+                new Sort.Order(queryRelationSort.getPatronymicSD(), Relationship_.patronymicTarget.getName()),
+                new Sort.Order(queryRelationSort.getSurnameSD(), Relationship_.surnameTarget.getName())
         );
     }
 }

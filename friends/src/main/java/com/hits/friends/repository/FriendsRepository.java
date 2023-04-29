@@ -4,6 +4,7 @@ import com.hits.friends.model.Blocking;
 import com.hits.friends.model.Friendship;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +15,7 @@ import java.util.UUID;
 /**
  * Класс репозиторий, нужен для работы с Friendship
  */
-public interface FriendsRepository extends CrudRepository<Friendship, UUID> {
+public interface FriendsRepository extends CrudRepository<Friendship, UUID>, JpaSpecificationExecutor {
 
     List<Friendship> getAllByTargetUser(UUID id);
 
@@ -24,35 +25,4 @@ public interface FriendsRepository extends CrudRepository<Friendship, UUID> {
 
     List<Friendship> getAllByMainUser(UUID mainUser);
 
-    /**
-     * Запрос получения всех заблокированных по фильтрам
-     * @param name имя
-     * @param surname фамилия
-     * @param patronymic отчество
-     * @param mainId id, если вы у пользователя в друзьях, он тоже появиться.
-     * @param pageable пагинация
-     * @return Page<Friendship>
-     */
-    @Query(nativeQuery = true,
-            value = " SELECT * FROM friendship\n" +
-                    " WHERE\n" +
-                    " LOWER(name_target) LIKE '%'|| :name_target ||'%' AND\n" +
-                    " LOWER(surname_target) LIKE '%'|| :surname_target ||'%' AND\n" +
-                    " LOWER(patronymic_target) LIKE '%'|| :patronymic_target ||'%' AND\n" +
-                    " (main_user = :main_user OR target_user = :main_user) AND \n" +
-                    " date_end IS NULL \n",
-            countQuery = "SELECT count(*) FROM friendship\n" +
-                    " WHERE\n" +
-                    " LOWER(name_target) LIKE '%'|| :name_target ||'%' AND\n" +
-                    " LOWER(surname_target) LIKE '%'|| :surname_target ||'%' AND\n" +
-                    " LOWER(patronymic_target) LIKE '%'|| :patronymic_target ||'%' AND\n" +
-                    " (main_user = :main_user OR target_user = :main_user) AND  \n" +
-                    " date_end IS NULL \n")
-    Page<Friendship> getAllByFilter(@Param("name_target") String name,
-                                  @Param("surname_target") String surname,
-                                  @Param("patronymic_target") String patronymic,
-//                                  @Param("date_first") Date date_first,
-//                                  @Param("date_second") Date date_second,
-                                  @Param("main_user") UUID mainId,
-                                  Pageable pageable);
 }

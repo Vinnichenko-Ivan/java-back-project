@@ -12,6 +12,8 @@ import com.hits.user.dto.*;
 import com.hits.user.exception.BadCredentialsException;
 import com.hits.user.mapper.UserMapper;
 import com.hits.user.model.User;
+import com.hits.user.model.UserSpecification;
+import com.hits.user.model.User_;
 import com.hits.user.repository.UserRepository;
 import com.hits.user.service.FriendService;
 import com.hits.user.service.JwtService;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -132,15 +135,15 @@ public class UserServiceImpl implements UserService {
         UserSortFieldDto userSortFieldDto = usersQueryDto.getUserSortFieldDto();
 
         List<Sort.Order> orders = List.of(
-                new Sort.Order(userSortFieldDto.getLoginSD(), "login"),
-                new Sort.Order(userSortFieldDto.getEmailSD(), "email"),
-                new Sort.Order(userSortFieldDto.getNameSD(), "name"),
-                new Sort.Order(userSortFieldDto.getSurnameSD(), "surname"),
-                new Sort.Order(userSortFieldDto.getPatronymicSD(), "patronymic"),
-                new Sort.Order(userSortFieldDto.getPhoneSD(), "phone"),
-                new Sort.Order(userSortFieldDto.getCitySD(), "city"),
-                new Sort.Order(userSortFieldDto.getBirthDateSD(), "birth_date"),
-                new Sort.Order(userSortFieldDto.getRegistrationDateSD(), "registration_date")
+                new Sort.Order(userSortFieldDto.getLoginSD(), User_.login.getName()),
+                new Sort.Order(userSortFieldDto.getEmailSD(), User_.email.getName()),
+                new Sort.Order(userSortFieldDto.getNameSD(), User_.name.getName()),
+                new Sort.Order(userSortFieldDto.getSurnameSD(), User_.surname.getName()),
+                new Sort.Order(userSortFieldDto.getPatronymicSD(), User_.patronymic.getName()),
+                new Sort.Order(userSortFieldDto.getPhoneSD(), User_.phone.getName()),
+                new Sort.Order(userSortFieldDto.getCitySD(), User_.city.getName()),
+                new Sort.Order(userSortFieldDto.getBirthDateSD(), User_.birthDate.getName()),
+                new Sort.Order(userSortFieldDto.getRegistrationDateSD(), User_.registrationDate.getName())
         );
 
         if(page < 0) {
@@ -148,23 +151,25 @@ public class UserServiceImpl implements UserService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
-        String login = toParam(userFiltersDto.getLogin());
-        String email = toParam(userFiltersDto.getEmail());
-        String name = toParam(userFiltersDto.getName());
-        String surname = toParam(userFiltersDto.getSurname());
-        String patronymic = toParam(userFiltersDto.getPatronymic());
-        String phone = toParam(userFiltersDto.getPhone());
-        String city = toParam(userFiltersDto.getCity());
+//        String login = toParam(userFiltersDto.getLogin());
+//        String email = toParam(userFiltersDto.getEmail());
+//        String name = toParam(userFiltersDto.getName());
+//        String surname = toParam(userFiltersDto.getSurname());
+//        String patronymic = toParam(userFiltersDto.getPatronymic());
+//        String phone = toParam(userFiltersDto.getPhone());
+//        String city = toParam(userFiltersDto.getCity());
 
-        Page<User> users =  userRepository.getAllByFilter(
-                login,
-                email,
-                name,
-                surname,
-                patronymic,
-                phone,
-                city,
-                pageable);
+        Page<User> users = userRepository.findAll(new UserSpecification(userFiltersDto), pageable);
+
+//        Page<User> users =  userRepository.getAllByFilter(
+//                login,
+//                email,
+//                name,
+//                surname,
+//                patronymic,
+//                phone,
+//                city,
+//                pageable);
 
         usersDto.setUsers(users.stream().map(userMapper::map).collect(Collectors.toList()));
 

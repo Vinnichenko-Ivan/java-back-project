@@ -10,6 +10,7 @@ import com.hits.friends.dto.*;
 import com.hits.friends.mapper.BlockingMapper;
 import com.hits.friends.mapper.CommonMapper;
 import com.hits.friends.model.Blocking;
+import com.hits.friends.model.BlockingSpecification;
 import com.hits.friends.model.Relationship;
 import com.hits.friends.repository.BlockingRepository;
 import com.hits.friends.service.BlockingService;
@@ -81,17 +82,7 @@ public class BlockingServiceImpl implements BlockingService {
         }
         Pageable pageable = PageRequest.of(page, size, Sort.by(commonService.genOrder(queryRelationDto.getQueryRelationSort())));
 
-        String name = queryRelationDto.getQueryRelationFilter().getName().toLowerCase();
-        String surname = queryRelationDto.getQueryRelationFilter().getSurname().toLowerCase();
-        String patronymic = queryRelationDto.getQueryRelationFilter().getPatronymic().toLowerCase();
-
-        Page<Blocking> blockingPage = blockingRepository.getAllByFilter(
-                name,
-                surname,
-                patronymic,
-                mainId,
-                pageable
-        );
+        Page<Blocking> blockingPage = blockingRepository.findAll(new BlockingSpecification(queryRelationDto.getQueryRelationFilter()), pageable);
 
         RelationsDto relationsDto = new RelationsDto();
 

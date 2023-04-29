@@ -17,11 +17,16 @@ public interface UserMapper {
     @Mapping(target = "surname", source = "fullName.surname")
     @Mapping(target = "patronymic", source = "fullName.patronymic")
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "registrationDate", ignore = true)
     User map(UserRegisterDto userRegisterDto);
 
     @Mapping(target = "name", source = "fullName.name")
     @Mapping(target = "surname", source = "fullName.surname")
     @Mapping(target = "patronymic", source = "fullName.patronymic")
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "registrationDate", ignore = true)
     void map(@MappingTarget User user, UserEditDto userEditDto);
 
     @Mapping(target = "fullName.name", source = "name")

@@ -11,6 +11,7 @@ import com.hits.friends.mapper.CommonMapper;
 import com.hits.friends.mapper.FriendshipMapper;
 import com.hits.friends.model.Blocking;
 import com.hits.friends.model.Friendship;
+import com.hits.friends.model.FriendshipSpecification;
 import com.hits.friends.repository.BlockingRepository;
 import com.hits.friends.repository.FriendsRepository;
 import com.hits.friends.service.CommonService;
@@ -93,17 +94,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         }
         Pageable pageable = PageRequest.of(page, size, Sort.by(commonService.genOrder(queryRelationDto.getQueryRelationSort())));
 
-        String name = queryRelationDto.getQueryRelationFilter().getName().toLowerCase();
-        String surname = queryRelationDto.getQueryRelationFilter().getSurname().toLowerCase();
-        String patronymic = queryRelationDto.getQueryRelationFilter().getPatronymic().toLowerCase();
-
-        Page<Friendship> friendships = friendsRepository.getAllByFilter(
-                name,
-                surname,
-                patronymic,
-                mainId,
-                pageable
-        );
+        Page<Friendship> friendships = friendsRepository.findAll(new FriendshipSpecification(queryRelationDto.getQueryRelationFilter()), pageable);
 
         RelationsDto relationsDto = new RelationsDto();
 

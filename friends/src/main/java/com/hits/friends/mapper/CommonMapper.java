@@ -9,6 +9,7 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface CommonMapper {
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "nameTarget", source = "fullName.name")
     @Mapping(target = "surnameTarget", source = "fullName.surname")
     @Mapping(target = "patronymicTarget", source = "fullName.patronymic")

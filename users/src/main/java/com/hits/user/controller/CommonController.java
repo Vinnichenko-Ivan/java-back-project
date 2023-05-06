@@ -1,5 +1,6 @@
 package com.hits.user.controller;
 
+import com.hits.common.dto.user.FullNameDto;
 import com.hits.common.exception.NotImplementedException;
 import com.hits.common.service.ApiKeyProvider;
 import com.hits.user.dto.UserDto;
@@ -30,5 +31,10 @@ public class CommonController {
     {
         apiKeyProvider.checkKey(key);
         return commonService.checkUser(id);
+    }
+
+    @GetMapping("/user/{id}")
+    public FullNameDto getUserName(@PathVariable UUID id, @RequestHeader("api-key") String key) {
+        return commonService.getUserName(id);
     }
 }

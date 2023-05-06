@@ -1,5 +1,8 @@
 package com.hits.user.service;
 
+import com.hits.common.dto.user.FullNameDto;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.UUID;
 
 /**
@@ -12,4 +15,6 @@ public interface CommonService {
      * @return True - да False - нет
      */
     Boolean checkUser(UUID id);
+
+    FullNameDto getUserName(UUID id);
 }

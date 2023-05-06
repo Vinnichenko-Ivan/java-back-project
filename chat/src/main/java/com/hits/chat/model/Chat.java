@@ -3,10 +3,7 @@ package com.hits.chat.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Data
@@ -27,7 +24,7 @@ public class Chat {
 
     private Date lastMessageDate = null;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     private Set<UUID> users;
 
     @OneToMany(fetch = FetchType.LAZY)
@@ -38,5 +35,6 @@ public class Chat {
     {
         this.createdDate = new Date(System.currentTimeMillis());
         this.id = java.util.UUID.randomUUID();
+        this.messages = new ArrayList<>();
     }
 }

@@ -29,6 +29,7 @@
         <module>users</module>
         <module>friends</module>
         <module>common</module>
+        <module>chat</module>
         <module>gateway</module>
     </modules>
 

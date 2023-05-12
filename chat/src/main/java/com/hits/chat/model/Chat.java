@@ -22,7 +22,7 @@ public class Chat {
 
     private UUID avatarId;
 
-    private Date lastMessageDate = null;
+    private UUID lastMessageId;
 
     @ElementCollection(fetch = FetchType.LAZY)
     private Set<UUID> users;

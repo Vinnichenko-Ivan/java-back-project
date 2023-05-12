@@ -14,6 +14,8 @@ public interface ChatService {
     void editChat(EditChatDto editChatDto);
     void sendMessage(SendMessageDto sendMessageDto);
     ChatInfoDto getChatInfo(UUID id);
-    List<ChatFindInfoDto> findChatInfo(ChatQueryDto chatQueryDto);
+    ChatFindInfoPagDto findChatInfo(ChatQueryDto chatQueryDto);
     List<MessageDto> getMessages(UUID id);
+
+    List<MessageFindDto> getMessages(String find);
 }

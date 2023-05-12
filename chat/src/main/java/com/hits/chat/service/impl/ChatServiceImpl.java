@@ -3,19 +3,23 @@ package com.hits.chat.service.impl;
 import com.hits.chat.dto.*;
 import com.hits.chat.mapper.ChatMapper;
 import com.hits.chat.mapper.MessageMapper;
-import com.hits.chat.model.Chat;
-import com.hits.chat.model.ChatType;
-import com.hits.chat.model.File;
-import com.hits.chat.model.Message;
+import com.hits.chat.model.*;
 import com.hits.chat.repository.ChatRepository;
 import com.hits.chat.repository.MessageRepository;
 import com.hits.chat.service.UserService;
 import com.hits.chat.service.ChatService;
+import com.hits.common.dto.user.FullNameDto;
+import com.hits.common.exception.ExternalServiceErrorException;
+import com.hits.common.exception.IllegalStateException;
 import com.hits.common.exception.NotFoundException;
 import com.hits.common.exception.NotImplementedException;
 import com.hits.common.service.ApiKeyProvider;
 import com.hits.common.service.JwtProvider;
+import com.hits.common.service.Utils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -42,6 +46,7 @@ public class ChatServiceImpl implements ChatService {
 
     private final MessageMapper messageMapper;
 
+
     @Override
     @Transactional
     public void sendPrivateMessage(SendMessageDto sendMessageDto) {
@@ -49,7 +54,7 @@ public class ChatServiceImpl implements ChatService {
             throw new NotFoundException("user not found");
         }
         Set<UUID> users = Set.of(jwtProvider.getId(), sendMessageDto.getChatId());
-        Chat chat = chatRepository.getChatByChatTypeAndUsers(ChatType.PRIVATE, users);
+        Chat chat = chatRepository.getPrivateChat(jwtProvider.getId(), sendMessageDto.getChatId());
         if(chat == null) {
             chat = createPrivateChat(users);
         }
@@ -88,6 +93,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Transactional
     public void sendMessage(SendMessageDto sendMessageDto) {
         UUID userId = jwtProvider.getId();
         Chat chat = chatRepository.findById(sendMessageDto.getChatId()).orElseThrow(() -> new NotFoundException("chat not fount"));
@@ -99,7 +105,11 @@ public class ChatServiceImpl implements ChatService {
         message.setText(sendMessageDto.getText());
         message.setFiles(saveFiles(sendMessageDto.getFiles()));
         message.setChat(chat);
-        messageRepository.save(message);
+        message = messageRepository.save(message);
+
+        chat.setLastMessageId(message.getId());
+
+        chatRepository.save(chat);
     }
 
     @Override
@@ -110,8 +120,20 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatFindInfoDto> findChatInfo(ChatQueryDto chatQueryDto) {
-        throw new NotImplementedException();
+    public ChatFindInfoPagDto findChatInfo(ChatQueryDto chatQueryDto) {
+        List<Sort.Order> orders = List.of(
+                new Sort.Order(Sort.Direction.ASC, Chat_.createdDate.getName())
+                );
+
+        Pageable pageable = Utils.toPageable(chatQueryDto.getPaginationQueryDto(), orders);
+        Page<Chat> chats = chatRepository.findAll(new ChatSpecification(chatQueryDto.getNameFilter(), jwtProvider.getId()), pageable);
+
+        ChatFindInfoPagDto dto = new ChatFindInfoPagDto();
+        dto.setChatFindInfoDtos(
+                chats.stream().map(this::toDto).collect(Collectors.toList())
+        );
+        dto.setPaginationDto(Utils.toPagination(chats));
+        return dto;
     }
 
     @Override
@@ -138,5 +160,85 @@ public class ChatServiceImpl implements ChatService {
         });
         users.add(id);
         return users;
+    }
+
+    @Override
+    public List<MessageFindDto> getMessages(String find) {
+        List<Message> messages = messageRepository.getMessages(jwtProvider.getId(), find);
+        return messages.stream().map(this::toDto).collect(Collectors.toList());
+    }
+
+    private ChatFindInfoDto toDto(Chat chat) {
+        ChatFindInfoDto chatFindInfoDto = new ChatFindInfoDto();
+        chatFindInfoDto.setId(chat.getId());
+        chatFindInfoDto.setName(getChatName(chat));
+        Message message = messageRepository.findById(chat.getLastMessageId()).orElse(null);
+
+        if(message == null)
+        {
+            chatFindInfoDto.setLastMessageText(null);
+            chatFindInfoDto.setLastMessageAuthor(null);
+            chatFindInfoDto.setLastMessageDate(null);
+        }
+        else {
+            chatFindInfoDto.setLastMessageText(message.getText());
+
+            FullNameDto fullNameDto;
+            try {
+                fullNameDto = userService.getUserName(message.getAuthorId(), apiKeyProvider.getKey());
+            }catch (Exception e) {
+                throw new ExternalServiceErrorException("user service error");
+            }
+            chatFindInfoDto.setLastMessageAuthor(fullNameDto);
+            chatFindInfoDto.setLastMessageDate(message.getCreatedDate());
+        }
+
+        return chatFindInfoDto;
+    }
+
+
+
+    private String getChatName(Chat chat) {
+        if(chat.getChatType() == ChatType.PRIVATE)
+        {
+            UUID userId = null;
+            UUID myId = jwtProvider.getId();
+
+            Set<UUID> users = chat.getUsers();
+
+            for(UUID id:users) {
+                if(myId != id) {
+                    userId = id;
+                    break;
+                }
+            }
+            FullNameDto fullNameDto;
+            if(userId == null) {
+                throw new IllegalStateException();
+            }
+            try {
+                fullNameDto = userService.getUserName(userId, apiKeyProvider.getKey());
+            }catch (Exception e) {
+                throw new ExternalServiceErrorException("user service error");
+            }
+            return fullNameDto.toString();
+        }
+        else {
+            return chat.getName();
+        }
+    }
+
+    private MessageFindDto toDto(Message message) {
+        MessageFindDto messageFindDto = new MessageFindDto();
+
+        Chat chat = message.getChat();
+
+        messageFindDto.setChatName(getChatName(chat));
+        messageFindDto.setDateCreated(message.getCreatedDate());
+        messageFindDto.setText(message.getText());
+        messageFindDto.setChatId(chat.getId());
+        messageFindDto.setFiles(message.getFiles().stream().map(f -> f.getFileName()).collect(Collectors.toList()));
+
+        return messageFindDto;
     }
 }

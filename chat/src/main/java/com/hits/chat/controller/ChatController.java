@@ -47,12 +47,17 @@ public class ChatController {
     }
 
     @PostMapping(value = "/find")
-    public List<ChatFindInfoDto> findChatInfo(@Valid @RequestBody ChatQueryDto chatQueryDto) {
+    public ChatFindInfoPagDto findChatInfo(@Valid @RequestBody ChatQueryDto chatQueryDto) {
         return chatService.findChatInfo(chatQueryDto);
     }
 
     @GetMapping(value = "/{id}/message")
     public List<MessageDto> getMessages(@PathVariable UUID id) {
         return chatService.getMessages(id);
+    }
+
+    @GetMapping(value = "/message")
+    public List<MessageFindDto> getMessages(@RequestParam String find) {
+        return chatService.getMessages(find);
     }
 }

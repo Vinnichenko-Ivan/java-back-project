@@ -5,6 +5,7 @@ import com.hits.common.exception.ExternalServiceErrorException;
 import com.hits.common.exception.NotFoundException;
 import com.hits.common.service.ApiKeyProvider;
 import com.hits.common.service.JwtProvider;
+import com.hits.common.service.Utils;
 import com.hits.friends.dto.*;
 import com.hits.friends.mapper.BlockingMapper;
 import com.hits.friends.mapper.CommonMapper;
@@ -81,30 +82,14 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public RelationsDto getFriend(QueryRelationDto queryRelationDto) {
-        UUID mainId = jwtProvider.getId();
-
-        int page = queryRelationDto.getPaginationQueryDto().getPageNumber() - 1;
-        int size = queryRelationDto.getPaginationQueryDto().getSize();
-
-        if(page < 0) {
-            throw new NotFoundException("index <= 0");
-        }
-        if(size <= 0) {
-            throw new NotFoundException("size <= 0");
-        }
-        Pageable pageable = PageRequest.of(page, size, Sort.by(commonService.genOrder(queryRelationDto.getQueryRelationSort())));
+        Pageable pageable = Utils.toPageable(queryRelationDto.getPaginationQueryDto(), commonService.genOrder(queryRelationDto.getQueryRelationSort()));
 
         Page<Friendship> friendships = friendsRepository.findAll(new FriendshipSpecification(queryRelationDto.getQueryRelationFilter()), pageable);
 
         RelationsDto relationsDto = new RelationsDto();
 
         relationsDto.setRelations(friendships.stream().map(friendshipMapper::map).collect(Collectors.toList()));
-
-        PaginationDto paginationDto = new PaginationDto();
-        paginationDto.setMaxPage(friendships.getTotalPages());
-        paginationDto.setPageNumber(queryRelationDto.getPaginationQueryDto().getPageNumber());
-        paginationDto.setSize(relationsDto.getRelations().size());
-        relationsDto.setPaginationDto(paginationDto);
+        relationsDto.setPaginationDto(Utils.toPagination(friendships));
         return relationsDto;
     }
 

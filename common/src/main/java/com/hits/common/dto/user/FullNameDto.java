@@ -17,4 +17,9 @@ public class FullNameDto {
     @NotBlank
     @ApiModelProperty(notes = "patronymic", example = "Ivanovich", required = true)
     private String patronymic;
+
+    @Override
+    public String toString() {
+        return surname + " " + name + " " + surname;
+    }
 }

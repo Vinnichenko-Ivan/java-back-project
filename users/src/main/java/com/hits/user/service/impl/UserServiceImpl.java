@@ -8,6 +8,7 @@ import com.hits.common.exception.ForbiddenException;
 import com.hits.common.exception.NotFoundException;
 import com.hits.common.service.ApiKeyProvider;
 import com.hits.common.service.JwtProvider;
+import com.hits.common.service.Utils;
 import com.hits.user.dto.*;
 import com.hits.user.exception.BadCredentialsException;
 import com.hits.user.mapper.UserMapper;
@@ -128,9 +129,6 @@ public class UserServiceImpl implements UserService {
     public UsersDto getUsers(UsersQueryDto usersQueryDto) {
         UsersDto usersDto = new UsersDto();
 
-        int page = usersQueryDto.getPaginationQueryDto().getPageNumber() - 1;
-        int size = usersQueryDto.getPaginationQueryDto().getSize();
-
         UserFiltersDto userFiltersDto = usersQueryDto.getUserFiltersDto();
         UserSortFieldDto userSortFieldDto = usersQueryDto.getUserSortFieldDto();
 
@@ -146,39 +144,13 @@ public class UserServiceImpl implements UserService {
                 new Sort.Order(userSortFieldDto.getRegistrationDateSD(), User_.registrationDate.getName())
         );
 
-        if(page < 0) {
-            throw new NotFoundException("index <= 0");
-        }
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
-//        String login = toParam(userFiltersDto.getLogin());
-//        String email = toParam(userFiltersDto.getEmail());
-//        String name = toParam(userFiltersDto.getName());
-//        String surname = toParam(userFiltersDto.getSurname());
-//        String patronymic = toParam(userFiltersDto.getPatronymic());
-//        String phone = toParam(userFiltersDto.getPhone());
-//        String city = toParam(userFiltersDto.getCity());
-
-        Page<User> users = userRepository.findAll(new UserSpecification(userFiltersDto), pageable);
-
-//        Page<User> users =  userRepository.getAllByFilter(
-//                login,
-//                email,
-//                name,
-//                surname,
-//                patronymic,
-//                phone,
-//                city,
-//                pageable);
+        Page<User> users = userRepository.findAll(new UserSpecification(userFiltersDto), Utils.toPageable(
+                usersQueryDto.getPaginationQueryDto(),
+                orders
+        ));
 
         usersDto.setUsers(users.stream().map(userMapper::map).collect(Collectors.toList()));
-
-        PaginationDto paginationDto = new PaginationDto();
-        paginationDto.setMaxPage(users.getTotalPages());
-        paginationDto.setPageNumber(usersQueryDto.getPaginationQueryDto().getPageNumber());
-        paginationDto.setSize(usersDto.getUsers().size());
-
-        usersDto.setPaginationDto(paginationDto);
+        usersDto.setPaginationDto(Utils.toPagination(users));
         return usersDto;
     }
 

@@ -1,5 +1,6 @@
 package com.hits.chat.dto;
 
+import com.hits.common.dto.user.FullNameDto;
 import com.hits.common.dto.user.PaginationQueryDto;
 import lombok.Data;
 
@@ -12,5 +13,5 @@ public class ChatFindInfoDto {
     private String name;
     private String lastMessageText;
     private Date lastMessageDate;
-    private UUID lastMessageAuthor;
+    private FullNameDto lastMessageAuthor;
 }

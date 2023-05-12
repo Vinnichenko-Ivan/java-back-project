@@ -1,6 +1,8 @@
 package com.hits.friends.service.impl;
 
+import com.hits.common.dto.user.FullNameDto;
 import com.hits.common.dto.user.PaginationDto;
+import com.hits.common.exception.AlreadyExistException;
 import com.hits.common.exception.ExternalServiceErrorException;
 import com.hits.common.exception.NotFoundException;
 import com.hits.common.service.ApiKeyProvider;
@@ -17,6 +19,7 @@ import com.hits.friends.repository.BlockingRepository;
 import com.hits.friends.repository.FriendsRepository;
 import com.hits.friends.service.CommonService;
 import com.hits.friends.service.FriendshipService;
+import com.hits.friends.service.NotificationRabbitProducer;
 import com.hits.friends.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +41,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     private final FriendsRepository friendsRepository;
 
     private final FriendshipMapper friendshipMapper;
-
+    private final NotificationRabbitProducer notificationRabbitProducer;
     private final UserService userService;
     private final ApiKeyProvider apiKeyProvider;
     private final CommonMapper commonMapper;
@@ -45,26 +49,18 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     private final CommonService commonService;
     @Override
+    @Transactional
     public void addFriend(AddRelationDto addRelationDto) {
         UUID targetId = addRelationDto.getTargetId();
         UUID mainId = jwtProvider.getId();
 
         commonService.checkUsers(mainId, targetId);
 
-        Friendship friendship = friendsRepository.getByMainUserAndTargetUser(mainId, targetId);
-        if(friendship == null)
-        {
-            friendship = new Friendship();
-            friendship.setMainUser(mainId);
-            friendship.setTargetUser(targetId);
-        }
-        else
-        {
-            friendship.setDateEnd(null);
-        }
-        commonMapper.map(friendship, addRelationDto);
+        addFriendship(mainId, targetId, addRelationDto.getFullName());
+        FullNameDto fullNameDto = userService.getUserName(mainId, apiKeyProvider.getKey());
+        addFriendship(targetId, mainId, fullNameDto);
 
-        friendsRepository.save(friendship);
+        notificationRabbitProducer.sendNewUserNotify(targetId, fullNameDto);
     }
 
     @Override
@@ -77,6 +73,14 @@ public class FriendshipServiceImpl implements FriendshipService {
         }
         friendship.setDateEnd(new Date(System.currentTimeMillis()));
         friendship = friendsRepository.save(friendship);
+
+        Friendship friendship2 = friendsRepository.getByMainUserAndTargetUser(targetId, mainId);
+        if(friendship2 == null)
+        {
+            throw new NotFoundException("friendship not found");
+        }
+        friendship2.setDateEnd(new Date(System.currentTimeMillis()));
+        friendship2 = friendsRepository.save(friendship2); //TODO уведомления
         return friendshipMapper.mapToFull(friendship);
     }
 
@@ -102,5 +106,24 @@ public class FriendshipServiceImpl implements FriendshipService {
             throw new NotFoundException("friendship not found");
         }
         return friendshipMapper.mapToFull(friendship);
+    }
+
+    private void addFriendship(UUID mainId, UUID targetId, FullNameDto fullNameDto) {
+        Friendship friendship = friendsRepository.getByMainUserAndTargetUser(mainId, targetId);
+        if(friendship == null)
+        {
+            friendship = new Friendship();
+            friendship.setMainUser(mainId);
+            friendship.setTargetUser(targetId);
+        }
+        else
+        {
+            if(friendship.getDateEnd() == null) {
+                throw new AlreadyExistException("already in friend");
+            }
+            friendship.setDateEnd(null);
+        }
+        commonMapper.map(friendship, fullNameDto);
+        friendsRepository.save(friendship);
     }
 }

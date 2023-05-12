@@ -1,5 +1,6 @@
 package com.hits.friends.mapper;
 
+import com.hits.common.dto.user.FullNameDto;
 import com.hits.common.dto.user.NameSyncDto;
 import com.hits.friends.dto.AddRelationDto;
 import com.hits.friends.model.Relationship;
@@ -19,5 +20,11 @@ public interface CommonMapper {
     @Mapping(target = "nameTarget", source = "fullName.name")
     @Mapping(target = "surnameTarget", source = "fullName.surname")
     @Mapping(target = "patronymicTarget", source = "fullName.patronymic")
-    void map(@MappingTarget Relationship relationship,AddRelationDto addRelationDto);
+    void map(@MappingTarget Relationship relationship, AddRelationDto addRelationDto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "nameTarget", source = "name")
+    @Mapping(target = "surnameTarget", source = "surname")
+    @Mapping(target = "patronymicTarget", source = "patronymic")
+    void map(@MappingTarget Relationship relationship, FullNameDto fullNameDto);
 }

@@ -6,6 +6,7 @@ import com.hits.chat.mapper.MessageMapper;
 import com.hits.chat.model.*;
 import com.hits.chat.repository.ChatRepository;
 import com.hits.chat.repository.MessageRepository;
+import com.hits.chat.service.NotificationRabbitProducer;
 import com.hits.chat.service.UserService;
 import com.hits.chat.service.ChatService;
 import com.hits.common.dto.user.FullNameDto;
@@ -45,6 +46,8 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMapper chatMapper;
 
     private final MessageMapper messageMapper;
+
+    private final NotificationRabbitProducer notificationRabbitProducer;
 
 
     @Override
@@ -106,6 +109,17 @@ public class ChatServiceImpl implements ChatService {
         message.setFiles(saveFiles(sendMessageDto.getFiles()));
         message.setChat(chat);
         message = messageRepository.save(message);
+
+        for(UUID id : chat.getUsers()) {
+            if(id != userId) {
+                notificationRabbitProducer.sendNewMessageNotify(
+                        sendMessageDto.getChatId(),
+                        getChatName(chat),
+                        sendMessageDto.getText()
+                );
+            }
+        }
+
 
         chat.setLastMessageId(message.getId());
 

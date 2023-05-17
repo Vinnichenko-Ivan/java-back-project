@@ -1,6 +1,7 @@
 package com.hits.friends.service.impl;
 
 import com.hits.common.dto.user.CheckDto;
+import com.hits.common.dto.user.FullNameDto;
 import com.hits.common.dto.user.PaginationDto;
 import com.hits.common.exception.ExternalServiceErrorException;
 import com.hits.common.exception.NotFoundException;
@@ -16,6 +17,7 @@ import com.hits.friends.model.Relationship;
 import com.hits.friends.repository.BlockingRepository;
 import com.hits.friends.service.BlockingService;
 import com.hits.friends.service.CommonService;
+import com.hits.friends.service.NotificationRabbitProducer;
 import com.hits.friends.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,8 +33,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class BlockingServiceImpl implements BlockingService {
-
+public class BlockingServiceImpl implements BlockingService {//TODO проверка на отправку сообщений
+    private final NotificationRabbitProducer notificationRabbitProducer;
     private final BlockingRepository blockingRepository;
 
     private final BlockingMapper blockingMapper;
@@ -64,6 +66,9 @@ public class BlockingServiceImpl implements BlockingService {
             blocking.setDateEnd(null);
         }
         commonMapper.map(blocking, addRelationDto);
+
+        FullNameDto fullNameDto = userService.getUserName(targetId, apiKeyProvider.getKey());
+        notificationRabbitProducer.sendNewUserBlockNotify(targetId, fullNameDto);
 
         blockingRepository.save(blocking);
     }
@@ -102,6 +107,8 @@ public class BlockingServiceImpl implements BlockingService {
         }
         blocking.setDateEnd(new Date(System.currentTimeMillis()));
         blocking = blockingRepository.save(blocking);
+        FullNameDto fullNameDto = userService.getUserName(targetId, apiKeyProvider.getKey());
+        notificationRabbitProducer.sendDeleteUserBlockNotify(targetId, fullNameDto);
         return blockingMapper.mapToFull(blocking);
     }
 

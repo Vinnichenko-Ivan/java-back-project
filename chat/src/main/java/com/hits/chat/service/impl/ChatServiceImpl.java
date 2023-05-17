@@ -110,16 +110,17 @@ public class ChatServiceImpl implements ChatService {
         message.setChat(chat);
         message = messageRepository.save(message);
 
-        for(UUID id : chat.getUsers()) {
-            if(id != userId) {
-                notificationRabbitProducer.sendNewMessageNotify(
-                        sendMessageDto.getChatId(),
-                        getChatName(chat),
-                        sendMessageDto.getText()
-                );
+        if(chat.getChatType() == ChatType.PRIVATE) { //что бы отправлять только в лс
+            for(UUID id : chat.getUsers()) {
+                if(id != userId) {
+                    notificationRabbitProducer.sendNewMessageNotify(
+                            sendMessageDto.getChatId(),
+                            getChatName(chat),
+                            sendMessageDto.getText()
+                    );
+                }
             }
         }
-
 
         chat.setLastMessageId(message.getId());
 

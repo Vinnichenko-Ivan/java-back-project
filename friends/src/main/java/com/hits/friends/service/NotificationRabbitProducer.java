@@ -5,5 +5,11 @@ import com.hits.common.dto.user.FullNameDto;
 import java.util.UUID;
 
 public interface NotificationRabbitProducer {
-    void sendNewUserNotify(UUID userId, FullNameDto friendName);
+    void sendNewUserFriendNotify(UUID userId, FullNameDto friendName);
+
+    void sendDeleteUserFriendNotify(UUID userId, FullNameDto friendName);
+
+    void sendNewUserBlockNotify(UUID userId, FullNameDto friendName);
+
+    void sendDeleteUserBlockNotify(UUID userId, FullNameDto friendName);
 }

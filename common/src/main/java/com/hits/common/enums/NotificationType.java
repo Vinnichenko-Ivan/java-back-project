@@ -7,6 +7,8 @@ public enum NotificationType {
     FRIEND_ADD("FRIEND_ADD"),
     FRIEND_DELETE("FRIEND_DELETE"),
     NEW_MESSAGE("NEW_MESSAGE"),
+    BLOCK_ADD("BLOCK_ADD"),
+    BLOCK_DELETE("BLOCK_DELETE"),
     LOGIN("LOGIN");
 
     private final String value;

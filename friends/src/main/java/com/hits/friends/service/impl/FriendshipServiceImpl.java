@@ -60,7 +60,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         FullNameDto fullNameDto = userService.getUserName(mainId, apiKeyProvider.getKey());
         addFriendship(targetId, mainId, fullNameDto);
 
-        notificationRabbitProducer.sendNewUserNotify(targetId, fullNameDto);
+        notificationRabbitProducer.sendNewUserFriendNotify(targetId, fullNameDto);
     }
 
     @Override
@@ -80,7 +80,10 @@ public class FriendshipServiceImpl implements FriendshipService {
             throw new NotFoundException("friendship not found");
         }
         friendship2.setDateEnd(new Date(System.currentTimeMillis()));
-        friendship2 = friendsRepository.save(friendship2); //TODO уведомления
+        friendship2 = friendsRepository.save(friendship2);
+
+        FullNameDto fullNameDto = userService.getUserName(mainId, apiKeyProvider.getKey());
+        notificationRabbitProducer.sendNewUserFriendNotify(targetId, fullNameDto);
         return friendshipMapper.mapToFull(friendship);
     }
 

@@ -16,7 +16,7 @@ public interface NotificationService {
 
     NotificationsDto getNotifications(NotificationsQueryDto notificationsQueryDto);
 
-    Integer notRead();
-    Integer read(ReadDto readDto);
+    Long notRead();
+    Long read(ReadDto readDto);
 
 }

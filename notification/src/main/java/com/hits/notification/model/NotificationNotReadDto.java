@@ -1,5 +1,6 @@
 package com.hits.notification.model;
 
+import com.hits.common.enums.NotificationType;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -20,10 +21,10 @@ public class NotificationNotReadDto implements Specification<Notification> {
     public Predicate toPredicate(Root<Notification> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         return criteriaBuilder.and(
                 criteriaBuilder.equal(root.get(Notification_.userId), userId),
-                criteriaBuilder.equal(root.get(Notification_.notificationType), "NEW_MESSAGE"),
+                criteriaBuilder.equal(root.get(Notification_.notificationType), NotificationType.NEW_MESSAGE),
                 criteriaBuilder.or(
-                        criteriaBuilder.equal(root.get(Notification_.notificationStatus),"NOT_SEND"),
-                        criteriaBuilder.equal(root.get(Notification_.notificationStatus),"SEND")
+                        criteriaBuilder.equal(root.get(Notification_.notificationStatus), NotificationStatus.NOT_SEND),
+                        criteriaBuilder.equal(root.get(Notification_.notificationStatus), NotificationStatus.SEND)
                 )
         );
     }

@@ -3,11 +3,13 @@ package com.hits.notification.service.impl;
 import com.hits.common.dto.notification.CreateNotificationDto;
 import com.hits.common.exception.NotFoundException;
 import com.hits.common.exception.NotImplementedException;
+import com.hits.common.service.JwtProvider;
 import com.hits.notification.dto.NotificationsDto;
 import com.hits.notification.dto.NotificationsQueryDto;
 import com.hits.notification.dto.ReadDto;
 import com.hits.notification.mapper.NotificationMapper;
 import com.hits.notification.model.Notification;
+import com.hits.notification.model.NotificationNotReadDto;
 import com.hits.notification.repository.NotificationRepository;
 import com.hits.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationMapper notificationMapper;
 
+    private final JwtProvider jwtProvider;
+
     @Override
     public void saveNotification(CreateNotificationDto createNotificationDto) {
         Notification notification = notificationMapper.map(createNotificationDto);
@@ -40,13 +44,13 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Integer notRead() {
-        throw new NotImplementedException();
+    public Long notRead() {
+        return notificationRepository.count(new NotificationNotReadDto(jwtProvider.getId()));
     }
 
     @Override
     @Transactional
-    public Integer read(ReadDto readDto) {
+    public Long read(ReadDto readDto) {
         List<Notification> notifications = new ArrayList<>();
         for(UUID id : readDto.getIds()) {
             Notification notification = notificationRepository.findById(id).orElseThrow(NotFoundException::new);
@@ -55,7 +59,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
         log.info("Notification status updated:" + notifications.toString());
         notificationRepository.saveAll(notifications);
-        //TODO количество
-        return null;
+
+        return notRead();
     }
 }

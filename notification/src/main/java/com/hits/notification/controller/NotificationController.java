@@ -29,12 +29,12 @@ public class NotificationController {
     }
 
     @GetMapping(value = "not-read")
-    public Integer notRead() {
+    public Long notRead() {
         return notificationService.notRead();
     }
 
     @PostMapping(value = "read")
-    public Integer read(@RequestBody @Valid ReadDto readDto) {
+    public Long read(@RequestBody @Valid ReadDto readDto) {
         return notificationService.read(readDto);
     }
 }

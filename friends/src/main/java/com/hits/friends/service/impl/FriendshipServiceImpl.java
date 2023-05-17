@@ -83,7 +83,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         friendship2 = friendsRepository.save(friendship2);
 
         FullNameDto fullNameDto = userService.getUserName(mainId, apiKeyProvider.getKey());
-        notificationRabbitProducer.sendNewUserFriendNotify(targetId, fullNameDto);
+        notificationRabbitProducer.sendDeleteUserFriendNotify(targetId, fullNameDto);
         return friendshipMapper.mapToFull(friendship);
     }
 

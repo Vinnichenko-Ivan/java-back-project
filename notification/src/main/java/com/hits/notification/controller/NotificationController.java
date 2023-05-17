@@ -4,12 +4,15 @@ import com.hits.common.exception.NotImplementedException;
 import com.hits.notification.dto.NotificationsDto;
 import com.hits.notification.dto.NotificationsQueryDto;
 import com.hits.notification.dto.ReadDto;
+import com.hits.notification.model.Notification;
+import com.hits.notification.service.NotificationService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Api
 @RestController
@@ -18,16 +21,20 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class NotificationController {
 
+    private final NotificationService notificationService;
 
-    public NotificationsDto getNotifications(NotificationsQueryDto notificationsQueryDto) {
-        throw new NotImplementedException();
+    @PostMapping(value = "")
+    public NotificationsDto getNotifications(@RequestBody @Valid NotificationsQueryDto notificationsQueryDto) {
+        return notificationService.getNotifications(notificationsQueryDto);
     }
 
+    @GetMapping(value = "not-read")
     public Integer notRead() {
-        throw new NotImplementedException();
+        return notificationService.notRead();
     }
 
-    public Integer read(ReadDto readDto) {
-        throw new NotImplementedException();
+    @PostMapping(value = "read")
+    public Integer read(@RequestBody @Valid ReadDto readDto) {
+        return notificationService.read(readDto);
     }
 }

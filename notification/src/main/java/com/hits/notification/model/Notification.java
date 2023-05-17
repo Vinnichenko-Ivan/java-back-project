@@ -34,6 +34,6 @@ public class Notification {
     {
         this.createdDate = new Date(System.currentTimeMillis());
         this.id = java.util.UUID.randomUUID();
-        this.notificationStatus = NotificationStatus.READY;
+        this.notificationStatus = NotificationStatus.NOT_SEND;
     }
 }

@@ -1,7 +1,8 @@
 package com.hits.notification.model;
 
 public enum NotificationStatus {
-    READY,
+    NOT_SEND,
+    SEND,
     READ
 }
 

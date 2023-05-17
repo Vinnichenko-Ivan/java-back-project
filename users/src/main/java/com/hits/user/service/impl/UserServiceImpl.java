@@ -52,6 +52,8 @@ public class UserServiceImpl implements UserService {
 
     private final JwtProvider jwtProvider;
 
+    private final NotificationRabbitProducerImpl notificationRabbitProducer;
+
 
     @Override
     public UserDto register(UserRegisterDto userRegisterDto) {
@@ -79,6 +81,7 @@ public class UserServiceImpl implements UserService {
                 String token = jwtService.generateAccessToken(user);
                 HttpHeaders responseHeaders = new HttpHeaders();
                 responseHeaders.set("Authorization", "Bearer " + token);
+                notificationRabbitProducer.sendNewUserNotify(user.getId(), user.getLogin());
                 return new ResponseEntity(userDto, responseHeaders, HttpStatus.OK);
             }
             else

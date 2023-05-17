@@ -18,4 +18,5 @@ public interface NotificationService {
 
     Integer notRead();
     Integer read(ReadDto readDto);
+
 }

@@ -1,6 +1,7 @@
 package com.hits.notification.model;
 
 import com.hits.common.enums.NotificationType;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;

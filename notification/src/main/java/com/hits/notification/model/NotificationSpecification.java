@@ -2,6 +2,7 @@ package com.hits.notification.model;
 
 
 import com.hits.common.enums.NotificationType;
+import com.hits.common.service.Utils;
 import com.hits.notification.dto.NotificationFilterDto;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -24,11 +25,11 @@ public class NotificationSpecification implements Specification<Notification> {
     }
 
     private Predicate loadFromSet(Set<NotificationType> notificationTypes, Root<Notification> root, CriteriaBuilder criteriaBuilder) {
-        Predicate predicate = criteriaBuilder.or();
+        Predicate predicate = criteriaBuilder.and();
         for(NotificationType type : notificationTypes) {
-            predicate = criteriaBuilder.equal(
+            predicate = criteriaBuilder.or(
                     predicate,
-                    criteriaBuilder.equal(root.get(Notification_.notificationType), type.getValue())
+                    criteriaBuilder.equal(root.get(Notification_.notificationType), type)
             );
         }
         return predicate;
@@ -36,10 +37,17 @@ public class NotificationSpecification implements Specification<Notification> {
 
     @Override
     public Predicate toPredicate(Root<Notification> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        if(notificationFilterDto.getStart() == null) {
+            return criteriaBuilder.and(
+                    criteriaBuilder.equal(root.get(Notification_.userId), userId),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get(Notification_.text)), Utils.toSQLReg(notificationFilterDto.getFilter())),
+                    loadFromSet(notificationFilterDto.getFilterType(), root, criteriaBuilder)
+            );
+        }
         return criteriaBuilder.and(
                 criteriaBuilder.equal(root.get(Notification_.userId), userId),
                 criteriaBuilder.between(root.get(Notification_.readDate), notificationFilterDto.getStart(), notificationFilterDto.getEnd()),
-                criteriaBuilder.like(root.get(Notification_.text), (notificationFilterDto.getFilter())),
+                criteriaBuilder.like(criteriaBuilder.lower(root.get(Notification_.text)), Utils.toSQLReg(notificationFilterDto.getFilter())),
                 loadFromSet(notificationFilterDto.getFilterType(), root, criteriaBuilder)
             );
     }

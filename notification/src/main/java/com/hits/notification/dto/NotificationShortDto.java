@@ -14,4 +14,5 @@ public class NotificationShortDto {
     private String text;
     private NotificationStatus status;
     private Date createdDate;
+    private Date readDate;
 }

@@ -30,7 +30,7 @@ public class Utils {
     public static PaginationDto toPagination(Page page) {
         PaginationDto paginationDto = new PaginationDto();
         paginationDto.setMaxPage(page.getTotalPages());
-        paginationDto.setSize(page.getSize());
+        paginationDto.setSize(page.getContent().size());
         paginationDto.setPageNumber(page.getNumber());
         return paginationDto;
     }

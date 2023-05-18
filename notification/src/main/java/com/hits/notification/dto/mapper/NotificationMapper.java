@@ -1,4 +1,4 @@
-package com.hits.notification.mapper;
+package com.hits.notification.dto.mapper;
 
 import com.hits.common.dto.notification.CreateNotificationDto;
 import com.hits.common.enums.NotificationType;
@@ -19,4 +19,11 @@ public interface NotificationMapper {
     @Mapping(target = "type", source = "notificationType")
     @Mapping(target = "status", source = "notificationStatus")
     NotificationShortDto map(Notification notification);
+
+    default String map(Date date) {
+        if(date == null) {
+            return null;
+        }
+        return String.format("%1$tY-%1$tm-%1$td %1$tH:%1$tM", date);
+    }
 }

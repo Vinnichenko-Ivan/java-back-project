@@ -13,6 +13,6 @@ public class NotificationShortDto {
     private NotificationType type;
     private String text;
     private NotificationStatus status;
-    private Date createdDate;
-    private Date readDate;
+    private String createdDate;
+    private String readDate;
 }

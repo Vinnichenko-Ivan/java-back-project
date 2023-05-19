@@ -7,3 +7,22 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+  minio:
+    image: bitnami/minio:2023.4.28
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+    volumes:
+      - minio-data:/data
+    ports:
+      - 9900:9000
+      - 9901:9001
+
+volumes:
+  minio-data:
+
+
+
+#volumes:
+#  minio-data: "S:\volumes\test"

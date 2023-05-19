@@ -32,6 +32,7 @@
         <module>chat</module>
         <module>gateway</module>
         <module>notification</module>
+        <module>file</module>
     </modules>
 
     <dependencyManagement>

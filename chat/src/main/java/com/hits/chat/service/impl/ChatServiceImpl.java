@@ -1,6 +1,7 @@
 package com.hits.chat.service.impl;
 
 import com.hits.chat.dto.*;
+import com.hits.chat.dto.MessageDto;
 import com.hits.chat.mapper.ChatMapper;
 import com.hits.chat.mapper.MessageMapper;
 import com.hits.chat.model.*;
@@ -10,10 +11,8 @@ import com.hits.chat.service.NotificationRabbitProducer;
 import com.hits.chat.service.UserService;
 import com.hits.chat.service.ChatService;
 import com.hits.common.dto.user.FullNameDto;
-import com.hits.common.exception.ExternalServiceErrorException;
+import com.hits.common.exception.*;
 import com.hits.common.exception.IllegalStateException;
-import com.hits.common.exception.NotFoundException;
-import com.hits.common.exception.NotImplementedException;
 import com.hits.common.service.ApiKeyProvider;
 import com.hits.common.service.JwtProvider;
 import com.hits.common.service.Utils;
@@ -73,6 +72,10 @@ public class ChatServiceImpl implements ChatService {
         chat.setChatType(ChatType.CHAT);
         chat.setAdminUser(jwtProvider.getId());
 
+        if(createChatDto.getUsersId().contains(jwtProvider.getId())) {
+            throw new BadRequestException("admin in users");
+        }
+
         chat.setUsers(toUsers(createChatDto.getUsersId(), jwtProvider.getId()));
         chat.setAvatarId(createChatDto.getAvatarId());
         chat.setName(createChatDto.getName());
@@ -121,10 +124,10 @@ public class ChatServiceImpl implements ChatService {
                 }
             }
         }
-
+//        chat = chatRepository.findById(sendMessageDto.getChatId()).orElseThrow(() -> new NotFoundException("chat not fount"));
         chat.setLastMessageId(message.getId());
 
-        chatRepository.save(chat);
+//        chatRepository.save(chat);
     }
 
     @Override
@@ -163,7 +166,11 @@ public class ChatServiceImpl implements ChatService {
         return chatRepository.save(chat);
     }
 
-    private Set<File> saveFiles(Set<FileDto> fileDtos) {//map
+    private Set<File> saveFiles(Set<FileDto> fileDtos) {
+        if(fileDtos == null)
+        {
+            return null;//map
+        }
         return fileDtos.stream().map((f) -> new File(f.getFileId(), f.getFileName())).collect(Collectors.toSet());
     }
 

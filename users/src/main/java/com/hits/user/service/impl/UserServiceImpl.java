@@ -81,7 +81,12 @@ public class UserServiceImpl implements UserService {
                 String token = jwtService.generateAccessToken(user);
                 HttpHeaders responseHeaders = new HttpHeaders();
                 responseHeaders.set("Authorization", "Bearer " + token);
-                notificationRabbitProducer.sendNewUserNotify(user.getId(), user.getLogin());
+                try {
+                    notificationRabbitProducer.sendNewUserNotify(user.getId(), user.getLogin());
+                } catch (Exception e) {
+                    throw new ExternalServiceErrorException("rabbit doesn't work");
+                }
+
                 return new ResponseEntity(userDto, responseHeaders, HttpStatus.OK);
             }
             else

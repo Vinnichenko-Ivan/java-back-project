@@ -8,17 +8,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MinioConfig {
-    @Value("minio.access-key")
+    @Value("${minio.access-key}")
     private String accessKey;
 
-    @Value("minio.secret-key")
+    @Value("${minio.secret-key}")
     private String secretKey;
 
-    @Value("minio.url")
+    @Value("${minio.url}")
     private String url;
 
     @Getter
-    @Value("minio.bucket-name")
+    @Value("${minio.bucket-name}")
     private String bucketName;
 
     @Bean

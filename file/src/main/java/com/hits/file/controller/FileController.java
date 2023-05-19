@@ -1,13 +1,18 @@
 package com.hits.file.controller;
 
+import com.hits.file.model.File;
 import com.hits.file.service.FileService;
+import com.hits.file.service.impl.FileServiceImpl;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -16,20 +21,27 @@ import java.util.UUID;
 @RequestMapping(value = "/file")
 @RequiredArgsConstructor
 @Validated
+@Log4j2
 public class FileController {
+
     private final FileService fileService;
 
+    @PostConstruct
+    public void init() {
+        log.info("start");
+    }
+
     @PostMapping(value = "/")
-    private UUID upload(@RequestParam("file")MultipartFile file) {
+    public UUID upload(@RequestParam("file")MultipartFile file, @RequestParam("name") String name) {
         try {
-            return fileService.upload(file.getBytes());
+            return this.fileService.upload(file.getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @GetMapping(value = "/{id}")
-    private byte[] download(@PathVariable UUID id) {
+    public byte[] download(@PathVariable UUID id) {
         return fileService.download(id);
     }
 }

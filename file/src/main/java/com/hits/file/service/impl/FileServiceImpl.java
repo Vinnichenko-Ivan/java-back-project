@@ -1,28 +1,33 @@
 package com.hits.file.service.impl;
 
 import com.hits.common.exception.ExternalServiceErrorException;
+import com.hits.common.service.JwtProvider;
 import com.hits.file.config.MinioConfig;
 import com.hits.file.service.FileService;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class FileServiceMinioImpl implements FileService {
+@Log4j2
+public class FileServiceImpl implements FileService {
 
     private final MinioClient minioClient;
     private final MinioConfig minioConfig;
+    private final JwtProvider jwtProvider;
 
+    @PostConstruct
+    public void init() {
+        log.info("start");
+    }
     @Override
     public UUID upload(byte[] file) {
         UUID id = java.util.UUID.randomUUID();;

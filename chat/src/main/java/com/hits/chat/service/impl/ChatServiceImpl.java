@@ -127,14 +127,24 @@ public class ChatServiceImpl implements ChatService {
 //        chat = chatRepository.findById(sendMessageDto.getChatId()).orElseThrow(() -> new NotFoundException("chat not fount"));
         chat.setLastMessageId(message.getId());
 
-//        chatRepository.save(chat);
+//        chatRepository.save(chat);//TODO получение данных о личных чатах
     }
 
     @Override
-    public ChatInfoDto getChatInfo(UUID id) {
-        return chatMapper.map(
-                chatRepository.findById(id).orElseThrow(() -> new NotFoundException("chat not fount"))
-        );
+    public ChatInfoDto getChatInfo(UUID id) {//TODO если пользователь состоит в чате
+        try{
+            return chatMapper.map(
+                    chatRepository.findById(id).orElseThrow(() -> new NotFoundException("chat not fount"))
+            );
+        } catch (NotFoundException e) {
+            Chat chat = chatRepository.getPrivateChat(jwtProvider.getId(), id);
+            if(chat == null) {
+                throw e;
+            }
+            ChatInfoDto chatInfoDto = chatMapper.map(chat);
+            chatInfoDto.setName(getChatName(chat));
+            return chatInfoDto;
+        }
     }
 
     @Override

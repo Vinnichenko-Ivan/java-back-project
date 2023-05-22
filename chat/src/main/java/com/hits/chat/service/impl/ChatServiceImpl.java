@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.hits.common.Paths.*;
+
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
@@ -53,9 +55,20 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public void sendPrivateMessage(SendMessageDto sendMessageDto) {
-        if(!userService.checkUser(sendMessageDto.getChatId(), apiKeyProvider.getKey())) {
-            throw new NotFoundException("user not found");
+
+        try {
+            Utils.logExternalQuery(USER_SERVICE_NAME, USER_CHECK_USER);
+            if(!userService.checkUser(sendMessageDto.getChatId(), apiKeyProvider.getKey())) {
+                throw new NotFoundException("user not found");
+            }
         }
+        catch (NotFoundException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new ExternalServiceErrorException("user service error");
+        }
+
         if(jwtProvider.getId().equals(sendMessageDto.getChatId())) {
             throw new BadRequestException("message to youself");
         }
@@ -182,7 +195,14 @@ public class ChatServiceImpl implements ChatService {
         var dtos = messageMapper.map(messages);
 
         for (int i = 0; i < messages.size(); i++) {
-            dtos.get(i).setAuthorName(userService.getUserName(messages.get(i).getAuthorId(), apiKeyProvider.getKey()));
+            FullNameDto fullNameDto;
+            try {
+                Utils.logExternalQuery(USER_SERVICE_NAME, USER_USER_NAME);
+                fullNameDto = userService.getUserName(messages.get(i).getAuthorId(), apiKeyProvider.getKey());
+            }catch (Exception e) {
+                throw new ExternalServiceErrorException("user service error");
+            }
+            dtos.get(i).setAuthorName(fullNameDto);
         }
 
         return dtos;
@@ -205,8 +225,17 @@ public class ChatServiceImpl implements ChatService {
 
     private Set<UUID> toUsers(Set<UUID> users, UUID id) {
         users.forEach((user) -> {
-            if(!userService.checkUser(user, apiKeyProvider.getKey())) {
-                throw new NotFoundException("user " + user + " not found");
+            try {
+                Utils.logExternalQuery(USER_SERVICE_NAME, USER_CHECK_USER);
+                if(!userService.checkUser(user, apiKeyProvider.getKey())) {
+                    throw new NotFoundException("user not found");
+                }
+            }
+            catch (NotFoundException e) {
+                throw e;
+            }
+            catch (Exception e) {
+                throw new ExternalServiceErrorException("user service error");
             }
         });
         users.add(id);
@@ -236,6 +265,7 @@ public class ChatServiceImpl implements ChatService {
 
             FullNameDto fullNameDto;
             try {
+                Utils.logExternalQuery(USER_SERVICE_NAME, USER_USER_NAME);
                 fullNameDto = userService.getUserName(message.getAuthorId(), apiKeyProvider.getKey());
             }catch (Exception e) {
                 throw new ExternalServiceErrorException("user service error");
@@ -268,6 +298,7 @@ public class ChatServiceImpl implements ChatService {
                 throw new IllegalStateException();
             }
             try {
+                Utils.logExternalQuery(USER_SERVICE_NAME, USER_USER_NAME);
                 fullNameDto = userService.getUserName(userId, apiKeyProvider.getKey());
             }catch (Exception e) {
                 throw new ExternalServiceErrorException("user service error");

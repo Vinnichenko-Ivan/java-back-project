@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.hits.common.Paths.*;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -115,6 +117,7 @@ public class UserServiceImpl implements UserService {
             userMapper.map(user, userEditDto);
             user = userRepository.save(user);
             try {
+                Utils.logExternalQuery(FRIEND_SERVICE_NAME, FRIEND_NAME_SYNC);
                 friendService.nameSynchronization(userMapper.mapToSync(user), apiKeyProvider.getKey());
             }
             catch (Exception e)
@@ -174,6 +177,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             CheckDto checkDto = new CheckDto(user.getId(), jwtService.getUser().getId());
+            Utils.logExternalQuery(FRIEND_SERVICE_NAME, FRIEND_CHECK_BLOCK);
             blocked = friendService.checkBlocking(checkDto, apiKeyProvider.getKey());
         } catch (Exception e) {
             throw new ExternalServiceErrorException("friend service error");

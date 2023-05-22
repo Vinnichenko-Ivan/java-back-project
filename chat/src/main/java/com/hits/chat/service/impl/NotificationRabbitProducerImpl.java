@@ -3,6 +3,7 @@ package com.hits.chat.service.impl;
 import com.hits.chat.service.NotificationRabbitProducer;
 import com.hits.common.dto.notification.CreateNotificationDto;
 import com.hits.common.enums.NotificationType;
+import com.hits.common.service.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +21,9 @@ public class NotificationRabbitProducerImpl implements NotificationRabbitProduce
 
     @Override
     public void sendNewMessageNotify(UUID userId, String nameChannel, String text) {
-        log.info("notify");
-        rabbitTemplate.convertAndSend("standart_notify","", createNotification(userId, nameChannel, text));
+        CreateNotificationDto dto = createNotification(userId, nameChannel, text);
+        Utils.logRabbitCreateNotification(dto);
+        rabbitTemplate.convertAndSend("standart_notify","", dto);
     }
 
     private CreateNotificationDto createNotification(UUID userId, String nameChannel, String text) {

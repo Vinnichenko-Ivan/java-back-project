@@ -15,6 +15,10 @@ public interface CommonService {
      * @return True - да False - нет
      */
     Boolean checkUser(UUID id);
-
+    /**
+     * Получение имя пользователя
+     * @param id ид
+     * @return FullNameDto
+     */
     FullNameDto getUserName(UUID id);
 }

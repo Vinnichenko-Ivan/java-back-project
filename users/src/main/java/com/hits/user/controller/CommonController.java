@@ -3,6 +3,7 @@ package com.hits.user.controller;
 import com.hits.common.dto.user.FullNameDto;
 import com.hits.common.exception.NotImplementedException;
 import com.hits.common.service.ApiKeyProvider;
+import com.hits.common.service.Utils;
 import com.hits.user.dto.UserDto;
 import com.hits.user.dto.UserEditDto;
 import com.hits.user.service.CommonService;
@@ -16,9 +17,11 @@ import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import java.util.UUID;
 
+import static com.hits.common.Paths.*;
+
 @Api
 @RestController
-@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "users/common")
+@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Validated
 public class CommonController {
@@ -26,15 +29,18 @@ public class CommonController {
 
     private final ApiKeyProvider apiKeyProvider;
 
-    @GetMapping("/check/{id}")
-    public Boolean checkUser(@PathVariable UUID id, @RequestHeader("api-key") String key)
+    @GetMapping(USERS_COMMON_CHECK_USER)
+    public Boolean checkUser(@PathVariable UUID id, @RequestHeader(API_SECURE_HEADER) String key)
     {
+        Utils.logQuery(USERS_COMMON_CHECK_USER, id);
         apiKeyProvider.checkKey(key);
         return commonService.checkUser(id);
     }
 
-    @GetMapping("/user/{id}")
-    public FullNameDto getUserName(@PathVariable UUID id, @RequestHeader("api-key") String key) {
+    @GetMapping(USERS_COMMON_GET_USER_NAME)
+    public FullNameDto getUserName(@PathVariable UUID id, @RequestHeader(API_SECURE_HEADER) String key) {
+        Utils.logQuery(USERS_COMMON_GET_USER_NAME, id);
+        apiKeyProvider.checkKey(key);
         return commonService.getUserName(id);
     }
 }

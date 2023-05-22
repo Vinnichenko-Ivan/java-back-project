@@ -28,6 +28,7 @@ public class Chat {
     private Set<UUID> users;
 
     @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_id")
     private List<Message> messages;
 
     @PrePersist

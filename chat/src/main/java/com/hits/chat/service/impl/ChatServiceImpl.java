@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -55,7 +56,10 @@ public class ChatServiceImpl implements ChatService {
         if(!userService.checkUser(sendMessageDto.getChatId(), apiKeyProvider.getKey())) {
             throw new NotFoundException("user not found");
         }
-        Set<UUID> users = Set.of(jwtProvider.getId(), sendMessageDto.getChatId());
+        if(jwtProvider.getId().equals(sendMessageDto.getChatId())) {
+            throw new BadRequestException("message to youself");
+        }
+        Set<UUID> users = new HashSet<>(Set.of(jwtProvider.getId(), sendMessageDto.getChatId()));
         Chat chat = chatRepository.getPrivateChat(jwtProvider.getId(), sendMessageDto.getChatId());
         if(chat == null) {
             chat = createPrivateChat(users);
@@ -131,18 +135,26 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ChatInfoDto getChatInfo(UUID id) {//TODO если пользователь состоит в чате
+    public ChatInfoDto getChatInfo(UUID id) {
         try{
+            Chat chat = chatRepository.findById(id).orElseThrow(() -> new NotFoundException("chat not fount"));
+            if(!chat.getUsers().contains(jwtProvider.getId())) {
+                throw new NotFoundException("chat not fount");
+            }
             return chatMapper.map(
-                    chatRepository.findById(id).orElseThrow(() -> new NotFoundException("chat not fount"))
+                    chat
             );
         } catch (NotFoundException e) {
             Chat chat = chatRepository.getPrivateChat(jwtProvider.getId(), id);
             if(chat == null) {
                 throw e;
             }
+            if(!chat.getUsers().contains(jwtProvider.getId())) {
+                throw new NotFoundException("chat not fount");
+            }
             ChatInfoDto chatInfoDto = chatMapper.map(chat);
             chatInfoDto.setName(getChatName(chat));
+            chatInfoDto.setDateCreated(chat.getCreatedDate());//TODO аватарка пользователя
             return chatInfoDto;
         }
     }
@@ -165,8 +177,15 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<MessageDto> getMessages(UUID id) {
-        return messageMapper.map(messageRepository.getAllByChat_Id(id));
+    public List<MessageDto> getMessages(UUID id) {//TODO картинка
+        List<Message> messages = messageRepository.getAllByChat_Id(id);
+        var dtos = messageMapper.map(messages);
+
+        for (int i = 0; i < messages.size(); i++) {
+            dtos.get(i).setAuthorName(userService.getUserName(messages.get(i).getAuthorId(), apiKeyProvider.getKey()));
+        }
+
+        return dtos;
     }
 
     private Chat createPrivateChat(Set<UUID> users) {

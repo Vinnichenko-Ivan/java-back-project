@@ -13,8 +13,8 @@ public class Paths {
     public static final String FRIEND_SERVICE_PATH = "http://localhost:8082/friends/common";
 
     public static final String USERS = "/users";
-    public static final String USERS_SING_UP = USERS + "/sign-up";
-    public static final String USERS_SING_IN = USERS + "/sign-in";
+    public static final String USERS_SIGN_UP = USERS + "/sign-up";
+    public static final String USERS_SIGN_IN = USERS + "/sign-in";
     public static final String USERS_GET_USERS = USERS + "/users";
     public static final String USERS_GET_USER = USERS + "/user/{login}";
     public static final String USERS_GET_ME = USERS + "/me";

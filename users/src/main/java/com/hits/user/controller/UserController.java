@@ -1,6 +1,5 @@
 package com.hits.user.controller;
 
-import com.hits.common.exception.NotImplementedException;
 import com.hits.common.service.Utils;
 import com.hits.user.dto.*;
 import com.hits.user.service.UserService;
@@ -27,17 +26,17 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping(USERS_SING_UP)
+    @PostMapping(USERS_SIGN_UP)
     public UserDto register(@Valid @RequestBody UserRegisterDto userRegisterDto)
     {
-        Utils.logQuery(USERS_SING_UP, userRegisterDto);
+        Utils.logQuery(USERS_SIGN_UP, userRegisterDto);
         return userService.register(userRegisterDto);
     }
 
-    @PostMapping(value = USERS_SING_IN, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = USERS_SIGN_IN, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDto> singIn(@Valid @RequestBody CredentialsDto credentialsDto)
     {
-        Utils.logQuery(USERS_SING_IN, "Я не покажу тебе пароль или логин тут");
+        Utils.logQuery(USERS_SIGN_IN, "Я не покажу тебе пароль или логин тут");
         return userService.authorize(credentialsDto);
     }
 

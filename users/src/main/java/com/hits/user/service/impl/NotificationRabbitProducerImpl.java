@@ -21,7 +21,7 @@ public class NotificationRabbitProducerImpl implements NotificationRabbitProduce
     public void sendNewUserNotify(UUID userId, String login) {
         CreateNotificationDto dto = createNotificationDto(userId, login);
         Utils.logRabbitCreateNotification(dto);
-        rabbitTemplate.convertAndSend("standart_notify","", dto);
+        rabbitTemplate.convertAndSend("queue_notif","", dto);
     }
 
     private CreateNotificationDto createNotificationDto(UUID userId, String login) {

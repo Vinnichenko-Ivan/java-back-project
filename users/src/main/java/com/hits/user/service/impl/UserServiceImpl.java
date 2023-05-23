@@ -31,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -101,18 +102,18 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    @Transactional
+    @Transactional
     @Override
     public UserDto putUser(UserEditDto userEditDto) {
         UUID id = jwtProvider.getId();
         if(userRepository.existsById(id)) {
-            if(userRepository.existsByLogin(userEditDto.getLogin())) {
+            User user = userRepository.getById(id);
+            if(userRepository.existsByLogin(userEditDto.getLogin()) && !user.getLogin().equals(userEditDto.getLogin())) {
                 throw new AlreadyExistException("login is used");
             }
-            else if(userRepository.existsByEmail(userEditDto.getEmail())) {
+            else if(userRepository.existsByEmail(userEditDto.getEmail()) && !user.getEmail().equals(userEditDto.getEmail())) {
                 throw new AlreadyExistException("email is used");
             }
-            User user = userRepository.getById(id);
 
             userMapper.map(user, userEditDto);
             user = userRepository.save(user);
@@ -170,7 +171,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.getByLogin(login);
         if(user == null)
         {
-            throw new NotFoundException("user not found");//TODO проверка на блок
+            throw new NotFoundException("user not found");
         }
 
         Boolean blocked = false;

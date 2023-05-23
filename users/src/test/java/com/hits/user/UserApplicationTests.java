@@ -1,33 +1,29 @@
 package com.hits.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.matching.*;
 import com.hits.common.dto.user.FullNameDto;
 import com.hits.user.dto.CredentialsDto;
+import com.hits.user.dto.UserDto;
+import com.hits.user.dto.UserEditDto;
 import com.hits.user.dto.UserRegisterDto;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.junit.jupiter.api.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -39,15 +35,18 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.UUID;
 
-import static com.hits.common.Paths.USERS_SIGN_IN;
-import static com.hits.common.Paths.USERS_SIGN_UP;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.hits.common.Paths.*;
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Log4j2
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 //@TestPropertySource("/test.properties")
 class UserApplicationTests {
     @Autowired
@@ -67,10 +66,10 @@ class UserApplicationTests {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private String header = "";
-
     @LocalServerPort
     private Integer port;
+
+    private WireMockServer server;
 
     static {
         rabbitMQContainer = new RabbitMQContainer("rabbitmq:3.10.6-management-alpine")
@@ -86,6 +85,17 @@ class UserApplicationTests {
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
             "postgres:15-alpine"
     );
+
+    @BeforeEach
+    void beforeEach(){
+        server = new WireMockServer(WireMockConfiguration.wireMockConfig().port(8082));
+        server.start();
+    }
+
+    @AfterEach
+    void afterEach() {
+        server.stop();
+    }
 
     @BeforeAll
     static void beforeAll() {
@@ -110,12 +120,14 @@ class UserApplicationTests {
         registry.add("rabbitmq.port", rabbitMQContainer::getAmqpPort);
     }
     @Test
+    @Order(1)
     void contextLoads() {
-
+        log.info("context load");
     }
 
     @SneakyThrows
     @Test
+    @Order(2)
     void registerUserTest() {
         UserRegisterDto userRegisterDto = new UserRegisterDto();
         FullNameDto fullNameDto = new FullNameDto();
@@ -178,6 +190,7 @@ class UserApplicationTests {
 
     @SneakyThrows
     @Test
+    @Order(3)
     void singInTest() {
         CredentialsDto credentialsDto = new CredentialsDto();
         credentialsDto.setLogin("testlogin1");
@@ -197,7 +210,129 @@ class UserApplicationTests {
                         .content(objectMapper.writeValueAsString(credentialsDto)))
                 .andExpect(status().isOk()).andReturn();
 
-        header = result.getResponse().getHeader("Authorization");
-        log.info(header);
+    }
+
+    @SneakyThrows
+    @Test
+    @Order(4)
+    void getMeTest() {
+        CredentialsDto credentialsDto = new CredentialsDto();
+        credentialsDto.setLogin("testlogin1");
+        credentialsDto.setPassword("1234qwErt@");
+
+        MvcResult result = mockMvc.perform(post(USERS_SIGN_IN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsString(credentialsDto)))
+                .andExpect(status().isOk()).andReturn();
+
+        String header = result.getResponse().getHeader("Authorization");
+
+        result = mockMvc.perform(get(USERS_GET_ME)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .header("Authorization", header))
+                .andExpect(status().isOk()).andReturn();
+
+        UserDto userDto = objectMapper.readValue(result.getResponse().getContentAsString(), UserDto.class);
+
+        assertEquals(userDto.getLogin(), "testlogin1");
+        assertEquals(userDto.getBirthDate(), new Date(2123123));
+        assertEquals(userDto.getFullName().getName(), "test1");
+        assertEquals(userDto.getFullName().getPatronymic(), "test2");
+        assertEquals(userDto.getFullName().getSurname(), "test3");
+    }
+
+
+    @SneakyThrows
+    @Test
+    @Order(5)
+    void putMeTest() {
+
+        server.stubFor(com.github.tomakehurst.wiremock.client.WireMock.patch(urlEqualTo("/friends/common/synchronise"))
+                .willReturn(ok()));
+
+        CredentialsDto credentialsDto = new CredentialsDto();
+        credentialsDto.setLogin("testlogin1");
+        credentialsDto.setPassword("1234qwErt@");
+
+        MvcResult result = mockMvc.perform(post(USERS_SIGN_IN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsString(credentialsDto)))
+                .andExpect(status().isOk()).andReturn();
+
+        String header = result.getResponse().getHeader("Authorization");
+
+        UserEditDto userEditDto  = new UserEditDto();
+        FullNameDto fullNameDto = new FullNameDto();
+        fullNameDto.setName("test11");
+        fullNameDto.setPatronymic("test21");
+        fullNameDto.setSurname("test31");
+        userEditDto.setAvatarId(UUID.randomUUID());
+        userEditDto.setBirthDate(new Date(21231231));
+        userEditDto.setCity("Tomsk1");
+        userEditDto.setEmail("email@email.com");
+        userEditDto.setFullName(fullNameDto);
+        userEditDto.setLogin("testlogin11");
+        userEditDto.setPhone("892340912341");
+
+
+
+        result = mockMvc.perform(put(USERS_PUT_ME)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsString(userEditDto))
+                        .header("Authorization", header))
+                .andExpect(status().isOk()).andReturn();
+
+        UserDto userDto = objectMapper.readValue(result.getResponse().getContentAsString(), UserDto.class);
+        assertEquals(userDto.getLogin(), "testlogin11");
+        assertEquals(userDto.getBirthDate(), new Date(21231231));
+        assertEquals(userDto.getFullName().getName(), "test11");
+        assertEquals(userDto.getFullName().getPatronymic(), "test21");
+        assertEquals(userDto.getFullName().getSurname(), "test31");
+    }
+
+    @SneakyThrows
+    @Test
+    @Order(6)
+    void getUser() {
+        CredentialsDto credentialsDto = new CredentialsDto();
+        credentialsDto.setLogin("testlogin11");
+        credentialsDto.setPassword("1234qwErt@");
+
+        MvcResult result = mockMvc.perform(post(USERS_SIGN_IN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsString(credentialsDto)))
+                .andExpect(status().isOk()).andReturn();
+
+        String header = result.getResponse().getHeader("Authorization");
+
+        Boolean answer = false;
+
+        server.stubFor(com.github.tomakehurst.wiremock.client.WireMock.post("/friends/common/blocking")
+                .willReturn(ok()
+                        .withBody("false")));
+
+        result = mockMvc.perform(get(USERS_GET_USER.replace("{login}","testlogin2"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8).header("Authorization", header))
+                .andExpect(status().isOk()).andReturn();
+
+        UserDto userDto = objectMapper.readValue(result.getResponse().getContentAsString(), UserDto.class);
+        assertEquals(userDto.getLogin(), "testlogin2");
+        assertEquals(userDto.getBirthDate(), new Date(2123123));
+        assertEquals(userDto.getFullName().getName(), "tester1");
+        assertEquals(userDto.getFullName().getPatronymic(), "tester2");
+        assertEquals(userDto.getFullName().getSurname(), "tester3");
+    }
+
+    @SneakyThrows
+    @Test
+    @Order(7)
+    void getUsers() {
+
     }
 }

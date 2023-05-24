@@ -169,8 +169,6 @@ class UserApplicationTests {
                         .content(objectMapper.writeValueAsString(userRegisterDto)))
                 .andExpect(status().isOk()).andReturn();
 
-        log.warn(result.getResponse().getContentAsString());
-
 
         userRegisterDto.setPassword("1234qwert@");
 

@@ -24,7 +24,7 @@ public interface BlockingRepository extends CrudRepository<Blocking, UUID>, JpaS
 
     Blocking getByMainUserAndTargetUser(UUID mainUser, UUID targetUser);
 
-    Boolean existsByMainUserAndTargetUser(UUID mainUser, UUID targetUser);
+    Boolean existsByMainUserAndTargetUserAndDateEndIsNull(UUID mainUser, UUID targetUser);
 
     List<Blocking> getAllByMainUser(UUID mainUser);
 

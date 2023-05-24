@@ -1,5 +1,6 @@
 package com.hits.friends.controller;
 
+import com.hits.common.service.Utils;
 import com.hits.friends.dto.*;
 import com.hits.common.exception.NotImplementedException;
 import com.hits.friends.service.FriendshipService;
@@ -14,37 +15,46 @@ import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.UUID;
 
+import static com.hits.common.Paths.*;
+
 @Api
 @RestController
-@RequestMapping(value = "/friends/friends", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Validated
 public class FriendsController {
 
     private final FriendshipService friendshipService;
-    @PostMapping(value = "/friends")
+    @PostMapping(value = FRIEND_FRIENDSHIP_GET_FRIENDS)
     RelationsDto getFriends(@Valid  @RequestBody QueryRelationDto queryRelationDto) {
+        Utils.logQuery(FRIEND_FRIENDSHIP_GET_FRIENDS, queryRelationDto);
         return friendshipService.getFriend(queryRelationDto);
     }
 
-    @GetMapping(value = "/friend/{id}")
+    @GetMapping(value = FRIEND_FRIENDSHIP_GET_FRIEND)
     FullRelationDto getFriend(@PathVariable UUID id) {
+        Utils.logQuery(FRIEND_FRIENDSHIP_GET_FRIEND, id);
         return friendshipService.getFriend(id);
     }
 
-    @PostMapping(value = "/friend/add")
+    @PostMapping(value = FRIEND_FRIENDSHIP_ADD)
     void addFriends(@Valid @RequestBody AddRelationDto addRelationDto) {
+        Utils.logQuery(FRIEND_FRIENDSHIP_ADD, addRelationDto);
         friendshipService.addFriend(addRelationDto);
     }
 
 
-    @DeleteMapping(value = "/friend/{id}")
+    @DeleteMapping(value = FRIEND_FRIENDSHIP_DELETE)
     FullRelationDto deleteFriend(@PathVariable UUID id) {
+        Utils.logQuery(FRIEND_FRIENDSHIP_DELETE, id);
         return friendshipService.deleteFriend(id);
     }
 
-    @PostMapping(value = "/friend/find")
+
+    @Deprecated
+    @PostMapping(value = FRIEND_FRIENDSHIP_FIND)
     void findFriends() {
+        Utils.logQuery(FRIEND_FRIENDSHIP_FIND);
         throw new NotImplementedException();
     }
 }

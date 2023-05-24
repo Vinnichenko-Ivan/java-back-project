@@ -80,7 +80,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public Boolean checkBlocking(CheckDto checkDto) {
-        return blockingRepository.existsByMainUserAndTargetUser(checkDto.getMainId(), checkDto.getTargetId());
+        return blockingRepository.existsByMainUserAndTargetUserAndDateEndIsNull(checkDto.getMainId(), checkDto.getTargetId());
     }
 
     @Override

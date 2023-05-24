@@ -34,4 +34,26 @@ public class Paths {
     public static final String CHAT_FIND = CHAT + "/find";
     public static final String CHAT_GET_MESSAGES = CHAT + "/{id}/message";
     public static final String CHAT_FIND_MESSAGES = CHAT + "/message";
+
+    public static final String FRIEND = "/friends";
+    public static final String FRIEND_FRIENDSHIP = FRIEND + "/friends";
+    public static final String FRIEND_FRIENDSHIP_GET_FRIENDS = FRIEND_FRIENDSHIP + "/friends";
+    public static final String FRIEND_FRIENDSHIP_GET_FRIEND = FRIEND_FRIENDSHIP + "/friend/{id}";
+    public static final String FRIEND_FRIENDSHIP_ADD = FRIEND_FRIENDSHIP + "/friend/add";
+    public static final String FRIEND_FRIENDSHIP_DELETE = FRIEND_FRIENDSHIP + "/friend/{id}";
+    public static final String FRIEND_FRIENDSHIP_FIND = FRIEND_FRIENDSHIP + "/friend/find";
+
+    public static final String FRIEND_BLOCKING = FRIEND + "/blocking";
+    public static final String FRIEND_BLOCKING_GET_BLOCKING = FRIEND_BLOCKING + "/blocking";
+    public static final String FRIEND_BLOCKING_GET_BLOCK = FRIEND_BLOCKING + "/blocking/{id}";
+    public static final String FRIEND_BLOCKING_ADD = FRIEND_BLOCKING + "/blocking/add";
+    public static final String FRIEND_BLOCKING_DELETE = FRIEND_BLOCKING + "/blocking/{id}";
+    public static final String FRIEND_BLOCKING_FIND = FRIEND_BLOCKING + "/blocking/find";
+    public static final String FRIEND_BLOCKING_CHECK = FRIEND_BLOCKING + "/blocking/check/{id}";
+
+    public static final String FRIEND_SYNC = "/friends/common" + FRIEND_NAME_SYNC;
+    public static final String FRIEND_BLOCK_CHECK = "/friends/common" + "/blocking";
+
+
+
 }

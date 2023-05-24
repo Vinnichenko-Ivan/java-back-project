@@ -54,6 +54,4 @@ public class Paths {
     public static final String FRIEND_SYNC = "/friends/common" + FRIEND_NAME_SYNC;
     public static final String FRIEND_BLOCK_CHECK = "/friends/common" + "/blocking";
 
-
-
 }

@@ -76,8 +76,7 @@ class FriendsApplicationTests {
 
 	@LocalServerPort
 	private Integer port;
-	@Rule
-	public WireMockRule serviceMock = new WireMockRule(new WireMockConfiguration().notifier(new Slf4jNotifier(true)));
+
 	private WireMockServer server;
 
 	static {

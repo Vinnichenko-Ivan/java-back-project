@@ -2,15 +2,16 @@ package com.hits.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.matching.*;
 import com.hits.common.dto.user.FullNameDto;
-import com.hits.user.dto.CredentialsDto;
-import com.hits.user.dto.UserDto;
-import com.hits.user.dto.UserEditDto;
-import com.hits.user.dto.UserRegisterDto;
+import com.hits.common.dto.user.PaginationQueryDto;
+import com.hits.user.dto.*;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.junit.Rule;
 import org.junit.jupiter.api.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -68,7 +69,8 @@ class UserApplicationTests {
 
     @LocalServerPort
     private Integer port;
-
+    @Rule
+    public WireMockRule serviceMock = new WireMockRule(new WireMockConfiguration().notifier(new Slf4jNotifier(true)));
     private WireMockServer server;
 
     static {
@@ -310,10 +312,9 @@ class UserApplicationTests {
 
         String header = result.getResponse().getHeader("Authorization");
 
-        Boolean answer = false;
-
         server.stubFor(com.github.tomakehurst.wiremock.client.WireMock.post("/friends/common/blocking")
                 .willReturn(ok()
+                        .withHeader("Content-Type", "application/json")
                         .withBody("false")));
 
         result = mockMvc.perform(get(USERS_GET_USER.replace("{login}","testlogin2"))
@@ -333,6 +334,32 @@ class UserApplicationTests {
     @Test
     @Order(7)
     void getUsers() {
+        CredentialsDto credentialsDto = new CredentialsDto();
+        credentialsDto.setLogin("testlogin11");
+        credentialsDto.setPassword("1234qwErt@");
+
+        MvcResult result = mockMvc.perform(post(USERS_SIGN_IN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsString(credentialsDto)))
+                .andExpect(status().isOk()).andReturn();
+
+        String header = result.getResponse().getHeader("Authorization");
+
+        UsersQueryDto usersQueryDto = new UsersQueryDto();
+        PaginationQueryDto paginationQueryDto = new PaginationQueryDto();
+        UserFiltersDto userFiltersDto = new UserFiltersDto();
+        UserSortFieldDto userSortFieldDto = new UserSortFieldDto();
+
+        usersQueryDto.setUserFiltersDto(userFiltersDto);
+        usersQueryDto.setUserSortFieldDto(userSortFieldDto);
+        usersQueryDto.setPaginationQueryDto(paginationQueryDto);
+
+        result = mockMvc.perform(post(USERS_GET_USERS)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(usersQueryDto))
+                        .characterEncoding(StandardCharsets.UTF_8).header("Authorization", header))
+                .andExpect(status().isOk()).andReturn();
 
     }
 }

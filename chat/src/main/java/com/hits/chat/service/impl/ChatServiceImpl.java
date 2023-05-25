@@ -23,10 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.hits.common.Paths.*;
@@ -72,9 +69,10 @@ public class ChatServiceImpl implements ChatService {
         if(jwtProvider.getId().equals(sendMessageDto.getChatId())) {
             throw new BadRequestException("message to youself");
         }
-        Set<UUID> users = new HashSet<>(Set.of(jwtProvider.getId(), sendMessageDto.getChatId()));
+
         Chat chat = chatRepository.getPrivateChat(jwtProvider.getId(), sendMessageDto.getChatId());
         if(chat == null) {
+            Set<UUID> users = new HashSet<>(Set.of(jwtProvider.getId(), sendMessageDto.getChatId()));
             chat = createPrivateChat(users);
         }
         sendMessageDto.setChatId(chat.getId());
@@ -127,8 +125,9 @@ public class ChatServiceImpl implements ChatService {
         message.setAuthorId(userId);
         message.setText(sendMessageDto.getText());
         message.setFiles(saveFiles(sendMessageDto.getFiles()));
-        message.setChat(chat);
         message = messageRepository.save(message);
+        chat.getMessages().add(message);
+        chat = chatRepository.save(chat);
 
         if(chat.getChatType() == ChatType.PRIVATE) { //что бы отправлять только в лс
             for(UUID id : chat.getUsers()) {
@@ -191,7 +190,9 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<MessageDto> getMessages(UUID id) {//TODO картинка
-        List<Message> messages = messageRepository.getAllByChat_Id(id);
+        Chat chat = getChat(id);
+        List<Message> messages = chat.getMessages();
+
         var dtos = messageMapper.map(messages);
 
         for (int i = 0; i < messages.size(); i++) {
@@ -224,6 +225,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     private Set<UUID> toUsers(Set<UUID> users, UUID id) {
+        users.add(id);
         users.forEach((user) -> {
             try {
                 Utils.logExternalQuery(USER_SERVICE_NAME, USER_CHECK_USER);
@@ -238,13 +240,12 @@ public class ChatServiceImpl implements ChatService {
                 throw new ExternalServiceErrorException("user service error");
             }
         });
-        users.add(id);
         return users;
     }
 
     @Override
     public List<MessageFindDto> getMessages(String find) {
-        List<Message> messages = messageRepository.getMessages(jwtProvider.getId(), find);
+        List<Message> messages = messageRepository.getMessages(jwtProvider.getId(), find.toLowerCase());
         return messages.stream().map(this::toDto).collect(Collectors.toList());
     }
 
@@ -252,7 +253,8 @@ public class ChatServiceImpl implements ChatService {
         ChatFindInfoDto chatFindInfoDto = new ChatFindInfoDto();
         chatFindInfoDto.setId(chat.getId());
         chatFindInfoDto.setName(getChatName(chat));
-        Message message = messageRepository.findById(chat.getLastMessageId()).orElse(null);
+
+        Message message = chat.getLastMessageId() != null ? messageRepository.findById(chat.getLastMessageId()).orElse(null) : null;
 
         if(message == null)
         {
@@ -288,7 +290,7 @@ public class ChatServiceImpl implements ChatService {
             Set<UUID> users = chat.getUsers();
 
             for(UUID id:users) {
-                if(myId != id) {
+                if(!myId.equals(id)) {
                     userId = id;
                     break;
                 }
@@ -322,5 +324,21 @@ public class ChatServiceImpl implements ChatService {
         messageFindDto.setFiles(message.getFiles().stream().map(f -> f.getFileName()).collect(Collectors.toList()));
 
         return messageFindDto;
+    }
+
+    private Chat getChat(UUID id) {
+        try{
+            Chat chat = chatRepository.findById(id).orElseThrow(() -> new NotFoundException("chat not fount"));
+            if(!chat.getUsers().contains(jwtProvider.getId())) {
+                throw new NotFoundException("chat not fount");
+            }
+            return chat;
+        } catch (NotFoundException e) {
+            Chat chat = chatRepository.getPrivateChat(jwtProvider.getId(), id);
+            if(chat == null) {
+                throw e;
+            }
+            return chat;
+        }
     }
 }

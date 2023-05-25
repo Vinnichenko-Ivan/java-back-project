@@ -20,6 +20,6 @@ public class FullNameDto {
 
     @Override
     public String toString() {
-        return surname + " " + name + " " + surname;
+        return surname + " " + name + " " + patronymic;
     }
 }

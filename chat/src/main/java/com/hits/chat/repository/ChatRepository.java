@@ -16,11 +16,12 @@ import java.util.UUID;
 public interface ChatRepository extends CrudRepository<Chat, UUID>, JpaSpecificationExecutor<Chat> {
 
     @Query(nativeQuery = true,
-    value = "SELECT * FROM (\n" +
-            "                  SELECT * FROM chat\n" +
-            "                  WHERE chat.chat_type = 'PRIVATE'\n" +
-            "              ) chat JOIN chat_users ON chat.id = chat_users.chat_id\n" +
-            "WHERE users = ?1 OR users = ?2 LIMIT 1\n")
+    value = "SELECT * FROM chat WHERE id IN(\n" +
+            "SELECT id FROM (\n" +
+            "                             SELECT * FROM chat\n" +
+            "                             WHERE chat.chat_type = 'PRIVATE'\n" +
+            "                         ) chat JOIN chat_users ON chat.id = chat_users.chat_id\n" +
+            "WHERE users = ?1 OR users = ?2 GROUP BY id HAVING count(*) = 2)")
     Chat getPrivateChat(UUID firstId, UUID secondId);
 
 

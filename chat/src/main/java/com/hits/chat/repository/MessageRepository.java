@@ -1,5 +1,6 @@
 package com.hits.chat.repository;
 
+import com.hits.chat.model.Chat;
 import com.hits.chat.model.Message;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -10,7 +11,7 @@ import java.util.UUID;
 
 @Repository
 public interface MessageRepository extends CrudRepository<Message, UUID> {
-    List<Message> getAllByChat_Id(UUID id);
+    List<Message> findAllByChat(Chat chat);
 
     @Query(nativeQuery = true,
             value = "SELECT * FROM message as m WHERE\n" +

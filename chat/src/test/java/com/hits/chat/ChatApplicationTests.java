@@ -530,7 +530,7 @@ class ChatApplicationTests {
                         .content(objectMapper.writeValueAsString(chatQueryDto))
                         .header("Authorization", header))
                 .andExpect(status().isOk()).andReturn();
-
+        result.getResponse().setCharacterEncoding(String.valueOf(StandardCharsets.UTF_8));
         ChatFindInfoPagDto chatFindInfoPagDto = objectMapper.readValue(result.getResponse().getContentAsString(), ChatFindInfoPagDto.class);
         if(chatFindInfoPagDto.getChatFindInfoDtos().size() == 0) {
             return null;

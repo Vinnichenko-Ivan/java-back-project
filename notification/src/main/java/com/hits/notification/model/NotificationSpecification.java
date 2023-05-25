@@ -25,7 +25,7 @@ public class NotificationSpecification implements Specification<Notification> {
     }
 
     private Predicate loadFromSet(Set<NotificationType> notificationTypes, Root<Notification> root, CriteriaBuilder criteriaBuilder) {
-        Predicate predicate = criteriaBuilder.and();
+        Predicate predicate = criteriaBuilder.or();
         for(NotificationType type : notificationTypes) {
             predicate = criteriaBuilder.or(
                     predicate,

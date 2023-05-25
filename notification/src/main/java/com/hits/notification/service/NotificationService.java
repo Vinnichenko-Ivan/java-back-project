@@ -13,9 +13,7 @@ import javax.validation.Valid;
 
 public interface NotificationService {
     void saveNotification(CreateNotificationDto createNotificationDto);
-
     NotificationsDto getNotifications(NotificationsQueryDto notificationsQueryDto);
-
     Long notRead();
     Long read(ReadDto readDto);
 

@@ -116,7 +116,7 @@ class ChatApplicationTests {
                 UUID.fromString("f3714bcb-792e-48c7-ba64-6f8779da6481")
         );
         otherUsersNames = new ArrayList<>();
-        header = "Bearer " + generateAccessToken(myId, "myLogin");
+
         Integer counter = 0;
         for(UUID id : otherUsers) {
             FullNameDto dto = new FullNameDto();
@@ -214,6 +214,7 @@ class ChatApplicationTests {
     @Order(2)
     @SneakyThrows
     void sendPrivateMessageTest() {
+        header = "Bearer " + generateAccessToken(myId, "myLogin");
         for(int i = 0; i < 6; i++) {
             UUID id = otherUsers.get(i);
             for(String text : messagesUsers.get(i)){
@@ -234,6 +235,7 @@ class ChatApplicationTests {
     @Order(3)
     @SneakyThrows
     void createChatTest() {
+        header = "Bearer " + generateAccessToken(myId, "myLogin");
         for (int i = 0; i < 3; i++) {
             CreateChatDto createChatDto = new CreateChatDto();
             createChatDto.setName(chatNames.get(i));
@@ -251,6 +253,7 @@ class ChatApplicationTests {
     @Order(4)
     @SneakyThrows
     void editChatTest() {
+        header = "Bearer " + generateAccessToken(myId, "myLogin");
         ChatQueryDto chatQueryDto = new ChatQueryDto();
         chatQueryDto.setPaginationQueryDto(new PaginationQueryDto());
         chatQueryDto.getPaginationQueryDto().setPageNumber(1);
@@ -282,6 +285,7 @@ class ChatApplicationTests {
     @Order(5)
     @SneakyThrows
     void sendMessageTest() {
+        header = "Bearer " + generateAccessToken(myId, "myLogin");
         UUID firstId = getChatIdByName("first1");
         UUID secondId = getChatIdByName("second");
         UUID thirdId = getChatIdByName("third");
@@ -309,6 +313,7 @@ class ChatApplicationTests {
     @Order(6)
     @SneakyThrows
     void getChatInfoTest() {
+        header = "Bearer " + generateAccessToken(myId, "myLogin");
         UUID first = getChatIdByName("first1");
         MvcResult result = mockMvc.perform(get(CHAT_INFO.replace("{id}", first.toString()))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -337,6 +342,7 @@ class ChatApplicationTests {
     @Order(7)
     @SneakyThrows
     void findChatInfoTest() {
+        header = "Bearer " + generateAccessToken(myId, "myLogin");
         getChatIdByName("first1");
         getChatIdByName("second");
         getChatIdByName("third");
@@ -346,6 +352,7 @@ class ChatApplicationTests {
     @Order(8)
     @SneakyThrows
     void getMessagesTest() {
+        header = "Bearer " + generateAccessToken(myId, "myLogin");
         UUID firstId = getChatIdByName("first1");
         UUID secondId = getChatIdByName("second");
         UUID thirdId = getChatIdByName("third");
@@ -392,6 +399,7 @@ class ChatApplicationTests {
     @Order(9)
     @SneakyThrows
     void findMessagesTest() {
+        header = "Bearer " + generateAccessToken(myId, "myLogin");
         MvcResult result = mockMvc.perform(get(CHAT_FIND_MESSAGES)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -474,6 +482,7 @@ class ChatApplicationTests {
     @Order(11)
     @SneakyThrows
     void findMessagesOtherUserTest() {
+        header = "Bearer " + generateAccessToken(otherUsers.get(0), "test");
         MvcResult result = mockMvc.perform(get(CHAT_FIND_MESSAGES)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -492,7 +501,7 @@ class ChatApplicationTests {
                 .andExpect(status().isOk()).andReturn();
         result.getResponse().setCharacterEncoding(String.valueOf(StandardCharsets.UTF_8));
         test = objectMapper.readValue(result.getResponse().getContentAsString(), objectMapper.getTypeFactory().constructCollectionType(List.class, MessageDto.class));
-        assertEquals(2, test.size());
+        assertEquals(1, test.size());
     }
 
     private String generateAccessToken(UUID id, String login) {

@@ -15,7 +15,7 @@ import java.util.List;
 @Log4j2
 public class Utils {
     public static String toSQLReg(String str) {
-        return "%" + str + "%";
+        return "%" + str.replace("%", "\\%").replace("_", "\\_") + "%";
     }
 
     public static Pageable toPageable(PaginationQueryDto paginationQueryDto, List<Sort.Order> orders) {

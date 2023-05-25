@@ -25,10 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +47,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationsDto getNotifications(NotificationsQueryDto notificationsQueryDto) {
+        notificationsQueryDto.getNotificationFilterDto().setFilter(notificationsQueryDto.getNotificationFilterDto().getFilter().toLowerCase());
         if(notificationsQueryDto.getPaginationQueryDto() == null)
         {
             PaginationQueryDto paginationQueryDto = new PaginationQueryDto();

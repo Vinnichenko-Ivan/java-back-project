@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,14 +35,16 @@ public class FileController {
     @PostMapping(value = "/")
     public UUID upload(@RequestParam("file")MultipartFile file, @RequestParam("name") String name) {
         try {
-            return this.fileService.upload(file.getBytes());
+            return this.fileService.upload(file.getBytes(), name);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @GetMapping(value = "/{id}")
-    public byte[] download(@PathVariable UUID id) {
+    public ResponseEntity<byte[]> download(@PathVariable UUID id) {
         return fileService.download(id);
     }
+
+
 }

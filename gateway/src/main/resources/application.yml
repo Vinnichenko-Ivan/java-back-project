@@ -22,6 +22,6 @@ spring:
           predicates:
             - Path=/notification/**
         - id: file
-          uri: http://localhost:8085/
+          uri: http://localhost:8086/
           predicates:
             - Path=/file/**

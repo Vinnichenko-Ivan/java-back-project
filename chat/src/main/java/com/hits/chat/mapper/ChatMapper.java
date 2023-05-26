@@ -8,5 +8,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ChatMapper {
     @Mapping(target = "adminId", source = "adminUser")
+    @Mapping(target = "dateCreated", source = "createdDate")
     ChatInfoDto map(Chat chat);
 }

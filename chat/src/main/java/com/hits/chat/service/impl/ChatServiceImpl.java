@@ -140,10 +140,7 @@ public class ChatServiceImpl implements ChatService {
                 }
             }
         }
-//        chat = chatRepository.findById(sendMessageDto.getChatId()).orElseThrow(() -> new NotFoundException("chat not fount"));
         chat.setLastMessageId(message.getId());
-
-//        chatRepository.save(chat);//TODO получение данных о личных чатах
     }
 
     @Override

@@ -44,7 +44,7 @@ public class UserController {
     public UsersDto getUsers(@Valid @RequestBody UsersQueryDto usersQueryDto)
     {
         Utils.logQuery(USERS_GET_USERS, usersQueryDto);
-        return userService.getUsers(usersQueryDto); //TODO фильтры
+        return userService.getUsers(usersQueryDto);
     }
 
     @GetMapping(USERS_GET_USER)
